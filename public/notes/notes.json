@@ -1,0 +1,27 @@
+[
+    {
+        "title": "Blue note",
+        "body": "This is a blue note",
+        "color": "blue"
+    },
+    {
+        "title": "Green note",
+        "body": "This is a green note",
+        "color": "green"
+    },
+    {
+        "title": "Yellow note",
+        "body": "This is a yellow note",
+        "color": "yellow"
+    },
+    {
+        "title": "Red note",
+        "body": "This is a red note",
+        "color": "red"
+    },
+    {
+        "title": "Magenta note",
+        "body": "This is a magenta note",
+        "color": "magenta"
+    }
+]
