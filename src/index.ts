@@ -7,6 +7,8 @@ import { transactionRouter } from './routers/transactions.js';
 import { defaultRouter } from './routers/default.js';
 
 const app = express();
+app.disable('x-powered-by');
+
 app.use(express.json());
 app.use(goodRouter);
 app.use(hunterRouter);

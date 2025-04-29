@@ -86,7 +86,7 @@ goodRouter.patch('/goods', (req, res) => {
     }
 });
 
-goodRouter.patch('/good/:id', (req, res) => {
+goodRouter.patch('/goods/:id', (req, res) => {
     if (!req.body) {
         res.status(400).send({error: 'Fields to be modified have to be provided in the request body',});
     } else {

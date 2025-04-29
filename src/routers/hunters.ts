@@ -17,7 +17,9 @@ hunterRouter.post('/hunters', (req, res) => {
 //get
 hunterRouter.get('/hunters', (req, res) => {
 
-    const allowedFilters = ['nombre', 'raza', 'ubicacion'];
+    //const filter = req.query.nombre?{nombre: req.query.nombre.toString()}:{};
+
+    const allowedFilters = ['nombre'];
     const actualFilters = Object.keys(req.query);
     const isValidFilter = actualFilters.every((filter) => allowedFilters.includes(filter));
 
@@ -56,6 +58,61 @@ hunterRouter.get('/hunters/:id', (req, res) => {
 });
 
 //patch
+hunterRouter.patch('/hunters', (req, res) => {
+    if (!req.query.id) {
+        res.status(400).send({error: 'An id must be provided in the query string',});
+    } else if (!req.body) {
+        res.status(400).send({error: 'Fields to be modified have to be provided in the request body',});
+    } else {
+        const allowedUpdates = ['nombre', 'raza', 'ubicacion'];
+        const actualUpdates = Object.keys(req.body);
+        const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
+
+        if (!isValidUpdate) {
+            res.status(400).send({error: 'Update is not permitted',});
+        } else {
+            Hunter.findOneAndUpdate({id: req.query.id}, req.body, {
+                new: true,
+                runValidators: true,
+            }).then((hunter) => {
+                if (!hunter) {
+                    res.status(404).send();
+                } else {
+                    res.send(hunter);
+                }
+            }).catch((error) => {
+                res.status(400).send(error);
+            });
+        }
+    }
+});
+
+hunterRouter.patch('/hunters/:id', (req, res) => {
+    if (!req.body) {
+        res.status(400).send({error: 'Fields to be modified have to be provided in the request body',});
+    } else {
+        const allowedUpdates = ['nombre', 'raza', 'ubicacion'];
+        const actualUpdates = Object.keys(req.body);
+        const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
+
+        if (!isValidUpdate) {
+            res.status(400).send({error: 'Update is not permited',});
+        } else {
+            Hunter.findByIdAndUpdate(req.params.id, req.body, {
+                new: true,
+                runValidators: true,
+            }).then((hunter) => {
+                if (!hunter) {
+                    res.status(404).send();
+                } else {
+                    res.send(hunter);
+                }
+            }).catch((error) => {
+                res.status(400).send(error);
+            });
+        }
+    }
+});
 
 //delete
 hunterRouter.delete('/hunters', (req, res) => {
