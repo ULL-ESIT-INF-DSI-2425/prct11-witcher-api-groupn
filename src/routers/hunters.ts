@@ -4,18 +4,26 @@ import { Hunter } from '../models/hunters.js';
 export const hunterRouter = express.Router();
 
 //post
-hunterRouter.post('/hunters', (req, res) => {
+hunterRouter.post('/hunters', async (req, res) => {
     const hunter = new Hunter(req.body);
 
-    hunter.save().then((hunter) => {
+    try {
+        await hunter.save();
+        res.status(201).send(hunter);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+
+
+    /*hunter.save().then((hunter) => {
         res.status(201).send(hunter);
     }).catch((error) => {
         res.status(400).send(error);
-    });
+    });*/
 });
 
 //get
-hunterRouter.get('/hunters', (req, res) => {
+hunterRouter.get('/hunters', async (req, res) => {
 
     //const filter = req.query.nombre?{nombre: req.query.nombre.toString()}:{};
 
@@ -34,6 +42,18 @@ hunterRouter.get('/hunters', (req, res) => {
         });
     }
 
+    try {
+        const hunters = await Hunter.find(filters);
+        if (hunters.length !== 0) {
+            res.send(hunters);
+        } else {
+            res.status(404).send();
+        }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+
+/*
     Hunter.find(filters).then((hunters) => {
         if(hunters.length !== 0) {
             res.send(hunters);   //todos los cazadores (sin query: http://localhost:3000/hunters)
@@ -42,10 +62,23 @@ hunterRouter.get('/hunters', (req, res) => {
         }
     }).catch(() => {
         res.status(500).send(); //error interno
-    });
+    });*/
 });
 
-hunterRouter.get('/hunters/:id', (req, res) => {
+hunterRouter.get('/hunters/:id', async (req, res) => {
+
+    try {
+        const hunter = await Hunter.findById(req.params.id);
+        if(!hunter) {
+            res.status(404).send();
+        } else {
+            res.send(hunter);
+        }
+    } catch (error) {
+        res.status(500).send();
+    }
+
+/*
     Hunter.findById(req.params.id).then((hunter) => {
         if (!hunter) {
             res.status(404).send();
@@ -54,11 +87,11 @@ hunterRouter.get('/hunters/:id', (req, res) => {
         }
     }).catch(() => {
         res.status(500).send();
-    });
+    });*/
 });
 
 //patch
-hunterRouter.patch('/hunters', (req, res) => {
+hunterRouter.patch('/hunters', async (req, res) => {
     if (!req.query.id) {
         res.status(400).send({error: 'An id must be provided in the query string',});
     } else if (!req.body) {
@@ -71,7 +104,23 @@ hunterRouter.patch('/hunters', (req, res) => {
         if (!isValidUpdate) {
             res.status(400).send({error: 'Update is not permitted',});
         } else {
-            Hunter.findOneAndUpdate({id: req.query.id}, req.body, {
+            try {
+                const hunterUpdate = await Hunter.findOneAndUpdate({id: req.query.id}, req.body, {
+                    new: true,
+                    runValidators: true,
+                },);
+
+                if (hunterUpdate) {
+                    res.send(hunterUpdate);
+                } else {
+                    res.status(404).send();
+                }
+            } catch (error) {
+                res.status(500).send(error);
+            }
+
+
+           /* Hunter.findOneAndUpdate({id: req.query.id}, req.body, {
                 new: true,
                 runValidators: true,
             }).then((hunter) => {
@@ -82,12 +131,12 @@ hunterRouter.patch('/hunters', (req, res) => {
                 }
             }).catch((error) => {
                 res.status(400).send(error);
-            });
+            });*/
         }
     }
 });
 
-hunterRouter.patch('/hunters/:id', (req, res) => {
+hunterRouter.patch('/hunters/:id', async (req, res) => {
     if (!req.body) {
         res.status(400).send({error: 'Fields to be modified have to be provided in the request body',});
     } else {
@@ -98,7 +147,23 @@ hunterRouter.patch('/hunters/:id', (req, res) => {
         if (!isValidUpdate) {
             res.status(400).send({error: 'Update is not permited',});
         } else {
-            Hunter.findByIdAndUpdate(req.params.id, req.body, {
+            try {
+                const hunter = await Hunter.findByIdAndUpdate(req.params.id, req.body, {
+                    new: true,
+                    runValidators: true,
+                });
+
+                if (!hunter) {
+                    res.status(404).send();
+                } else {
+                    res.send(hunter);
+                }
+            } catch (error) {
+                res.status(500).send(error);
+            }
+
+
+            /*Hunter.findByIdAndUpdate(req.params.id, req.body, {
                 new: true,
                 runValidators: true,
             }).then((hunter) => {
@@ -109,17 +174,29 @@ hunterRouter.patch('/hunters/:id', (req, res) => {
                 }
             }).catch((error) => {
                 res.status(400).send(error);
-            });
+            });*/
         }
     }
 });
 
 //delete
-hunterRouter.delete('/hunters', (req, res) => {
+hunterRouter.delete('/hunters', async (req, res) => {
     if (!req.query.id) {
         res.status(400).send({error: 'An id must be provided',});
     } else {
-        Hunter.findOneAndDelete({id: req.query.id}).then((hunter) => {
+
+        try {
+            const hunterDeleted = await Hunter.findOneAndDelete({id: req.query.id});
+            if (!hunterDeleted) {
+                res.status(404).send();
+            } else {
+                res.send(hunterDeleted);
+            }
+        } catch (error) {
+            res.status(500).send(error);
+        }
+
+        /*Hunter.findOneAndDelete({id: req.query.id}).then((hunter) => {
             if (!hunter) {
                 res.status(404).send();
             } else {
@@ -127,12 +204,23 @@ hunterRouter.delete('/hunters', (req, res) => {
             }
         }).catch(() => {
             res.status(400).send();
-        });
+        });*/
     }
 });
 
-hunterRouter.delete('/hunters/:id', (req, res) => {
-    Hunter.findByIdAndDelete(req.params.id).then((hunter) => {
+hunterRouter.delete('/hunters/:id', async (req, res) => {
+    try {
+        const hunter = await Hunter.findByIdAndDelete(req.params.id);
+        if (!hunter) {
+            res.status(404).send();
+        } else {
+            res.send(hunter);
+        }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+
+    /*Hunter.findByIdAndDelete(req.params.id).then((hunter) => {
         if (!hunter) {
             res.status(404).send();
         } else {
@@ -140,5 +228,5 @@ hunterRouter.delete('/hunters/:id', (req, res) => {
         }
     }).catch(() => {
         res.status(400).send();
-    });
+    });*/
 });

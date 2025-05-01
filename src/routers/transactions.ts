@@ -5,6 +5,10 @@ import { Good } from '../models/goods.js';
 import { Hunter } from '../models/hunters.js';
 import { Merchant } from '../models/merchants.js';
 
+import { goodsDocumentInterface } from '../models/goods.js';
+
+import { Document, Schema, Types, model } from 'mongoose';
+
 export const transactionRouter = express.Router();
 
 /*
@@ -23,6 +27,19 @@ export const transactionRouter = express.Router();
 
 //post
 /*
+
+    compra cazador / venta mercader
+
+    COMPRA cazador:
+        BIENES SOLICITADOS EXISTEN Y CON STOCK SUFICIENTE
+
+    COMPRA mercader:
+        Actualizar el stock de los bienes que ya existieran 
+        Y crear los nuevos que no existan.
+
+    Establecer la fecha y hora de la transaccion
+    Valor
+
     Body de la peticion recibe la transaccion (compra de un hunter o venta de un mercader),
     en el body debe de encontrarse: 
     - nombre hunter/mercader.
@@ -42,7 +59,7 @@ export const transactionRouter = express.Router();
     calcular el importe asociado a traves del numero de unidades
     especificado para cada bien involucrado en la transaccion.
 
-    (agrupar el codigo del manejador en diferentes funciones para que sea más legible.)
+    (agrupar el codigo del manejador en diferentes funciones para que sea más legible.) <<<< FALTA
 
     
 
@@ -51,72 +68,110 @@ export const transactionRouter = express.Router();
 
 transactionRouter.post('/transactions', async (req, res) => {
 
+try {
+    const {id, tipo, nombre, bienes} = req.body;
 
-    try {
+    const idUnique = await Transaction.findOne({id});
 
-        // extraer valores esenciales
-        const {tipo, cazador, mercader, bienes} = req.body;
+    if(idUnique) {
+        res.status(400).send();
+        return;
+    }
 
-        // compra y cazador
-        if (tipo === 'compra' && !cazador) {
-            res.status(400).send();
-            return;
-        }
+    //validar tipo
+    if (tipo !== 'compra' && tipo !== 'venta') {
+        res.status(400).send();
+        return;
+    }
 
-        // venta y mercader
-        if (tipo === 'venta' && !mercader) {
-            res.status(400).send();
-            return;
-        }
+    //console.log(tipo, nombre, bienes);
+    const persona = tipo === 'compra'
+    ? await Hunter.findOne({nombre})
+    : await Merchant.findOne({nombre});
 
-        const bienesProcesados = bienes.map(item => {
-            return {
-                idBien: item.bien,
-                cantidad: item.cantidad
-            };
-        });
+    //console.log(persona);
+    // comprobar si cazador/mercader existe
+    if (!persona) {
+        res.status(404).send();
+        return;
+    }
 
-        let valorTotal = 0;
+    let valorTotal = 0;
+    const bienesProcesados: {bien: Types.ObjectId; cantidad: number}[] = [];
 
-        for (const {idBien, cantidad} of bienesProcesados) {
-            const bien = await Good.findById(idBien);
+    //comprobar cada bien individualmente
+    for (const item of bienes) {
+        const {nombre, cantidad} = item;
+        //console.log(nombre);
 
-            // si algun bien no existe, error
+        let bien = await Good.findOne({nombre: nombre});
+        //para tipo compra
+        if (tipo === 'compra') {
             if (!bien) {
                 res.status(404).send();
                 return;
             }
 
-            // si alguna cantidad (body) es mayor al stock del bien, error
-            if (cantidad > bien.stock) {
+            //comprobar que hay más stock que la compra
+            if (bien.stock < cantidad) {
                 res.status(400).send();
                 return;
             }
 
-            if (bien) {
-                valorTotal += bien.valor * cantidad;
+            
+            bien.stock -= cantidad;
+
+            //si el stock se queda a 0 se borra, si es mayor que 0 se actualiza el stock del bien
+            if (bien.stock <= 0) {
+                await Good.deleteOne({_id: bien._id});
+            } else {
+                await bien.save();
             }
+        } else if (tipo === 'venta'){
+            // si no se encontró el bien en la base de datos se crea un bien
+            if (!bien) {
+                //if (!item.id || !item.nombre || !item.valor) {
+                //    res.status(400).send();
+                //    return;
+                //}
+                bien = new Good({
+                    id: item.id,
+                    nombre: nombre,
+                    descripcion: item.descripcion || 'Sin descripcion',
+                    material: item.material || 'Desconocido',
+                    peso: item.peso || 1,
+                    valor: item.valor,
+                    stock: cantidad
+                });
+            } else {
+                // si el bien se encuentra en la base de datos se suma la cantidad de la compra al stock del bien
+                bien.stock += cantidad;
+            }
+            await bien.save();
         }
+        valorTotal += bien!.valor * cantidad;
 
-
-        const newTransaction = new Transaction({
-            tipo,
-            fecha: new Date(),
-            cazador,
-            mercader,
-            bienes,
-            valor: valorTotal,
-        });
-        //await newTransaction.save();
-        res.send(newTransaction);
-
-
-        //console.log(valorTotal);
-        //console.log(bienesProcesados);
-        //const goodsDetails = await Good.findById(bienes.bien);
-    } catch (error) {
-        res.status(500).send(error);
+        bienesProcesados.push({bien: bien!._id as Types.ObjectId, cantidad});
     }
+
+    const transactionADD = new Transaction({
+        id: id,
+        tipo,
+        cazador: tipo === 'compra' ? persona._id : undefined,
+        mercader: tipo === 'venta' ? persona._id : undefined,
+        bienes: bienesProcesados,
+        fecha: new Date(),
+        valor: valorTotal
+    });
+
+    await transactionADD.save();
+    res.status(201).send(transactionADD);
+
+
+} catch (error) {
+    res.status(500).send(error);
+}
+
 });
 
 //get
