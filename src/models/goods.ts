@@ -7,6 +7,7 @@ interface goodsDocumentInterface extends Document {
   material: string,
   peso: number,
   valor: number,
+  stock: number,
 }
 
 const GoodSchema = new Schema<goodsDocumentInterface>({
@@ -33,7 +34,7 @@ const GoodSchema = new Schema<goodsDocumentInterface>({
   peso: {
     type: Number,
     required: true,
-    trim: true,
+    min: [0, 'El peso no puede ser negativo'],
   },
   valor: {
     type: Number,
@@ -45,6 +46,12 @@ const GoodSchema = new Schema<goodsDocumentInterface>({
         }
     }
   },
+  stock: {
+    type: Number,
+    required: true,
+    min: [0, 'El stock no puede ser negativo'],
+    default: 1,
+  }
 });
 
 export const Good = model<goodsDocumentInterface>('Good', GoodSchema);

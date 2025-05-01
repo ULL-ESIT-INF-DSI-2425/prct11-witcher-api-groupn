@@ -3,7 +3,7 @@ import { Document, Schema, model } from 'mongoose';
 interface merchantsDocumentInterface extends Document {
   id: number,
   nombre: string,
-  tipo: string,
+  tipo: 'herrero' | 'vendedor ambulante' | 'alquimista' | 'carpintero' | 'curandero',
   ubicacion: string,
 }
 
@@ -22,11 +22,14 @@ const MerchantSchema = new Schema<merchantsDocumentInterface>({
     type: String,
     required: true,
     trim: true,
+    enum: ['herrero', 'vendedor ambulante', 'alquimista', 'carpintero', 'curandero'],
   },
   ubicacion: {
     type: String,
     required: true,
     trim: true,
+    minlength: 3,
+    maxlength: 50,
   },
 });
 

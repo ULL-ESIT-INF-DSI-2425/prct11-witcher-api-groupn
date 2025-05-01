@@ -1,6 +1,10 @@
 import express from 'express';
 import { Transaction } from '../models/transactions.js';
 
+import { Good } from '../models/goods.js';
+import { Hunter } from '../models/hunters.js';
+import { Merchant } from '../models/merchants.js';
+
 export const transactionRouter = express.Router();
 
 /*
@@ -43,6 +47,77 @@ export const transactionRouter = express.Router();
     
 
 */
+
+
+transactionRouter.post('/transactions', async (req, res) => {
+
+
+    try {
+
+        // extraer valores esenciales
+        const {tipo, cazador, mercader, bienes} = req.body;
+
+        // compra y cazador
+        if (tipo === 'compra' && !cazador) {
+            res.status(400).send();
+            return;
+        }
+
+        // venta y mercader
+        if (tipo === 'venta' && !mercader) {
+            res.status(400).send();
+            return;
+        }
+
+        const bienesProcesados = bienes.map(item => {
+            return {
+                idBien: item.bien,
+                cantidad: item.cantidad
+            };
+        });
+
+        let valorTotal = 0;
+
+        for (const {idBien, cantidad} of bienesProcesados) {
+            const bien = await Good.findById(idBien);
+
+            // si algun bien no existe, error
+            if (!bien) {
+                res.status(404).send();
+                return;
+            }
+
+            // si alguna cantidad (body) es mayor al stock del bien, error
+            if (cantidad > bien.stock) {
+                res.status(400).send();
+                return;
+            }
+
+            if (bien) {
+                valorTotal += bien.valor * cantidad;
+            }
+        }
+
+
+        const newTransaction = new Transaction({
+            tipo,
+            fecha: new Date(),
+            cazador,
+            mercader,
+            bienes,
+            valor: valorTotal,
+        });
+        //await newTransaction.save();
+        res.send(newTransaction);
+
+
+        //console.log(valorTotal);
+        //console.log(bienesProcesados);
+        //const goodsDetails = await Good.findById(bienes.bien);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
 
 //get
 /*

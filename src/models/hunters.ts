@@ -3,7 +3,7 @@ import { Document, Schema, model } from 'mongoose';
 interface huntersDocumentInterface extends Document {
   id: number,
   nombre: string,
-  raza: string,
+  raza: 'humano' | 'elfo' | 'brujo' | 'enano' | 'fantasma',
   ubicacion: string,
 }
 
@@ -22,11 +22,14 @@ const HunterSchema = new Schema<huntersDocumentInterface>({
     type: String,
     required: true,
     trim: true,
+    enum: ['humano', 'elfo', 'brujo', 'enano', 'fantasma'],
   },
   ubicacion: {
     type: String,
     required: true,
     trim: true,
+    minlength: 3,
+    maxlength: 50,
   },
 });
 

@@ -201,7 +201,18 @@ goodRouter.delete('/goods', async (req, res) => {
     }
 });
 
-goodRouter.delete('/goods/:id', (req, res) => {
+goodRouter.delete('/goods/:id', async (req, res) => {
+    try {
+        const bien = await Good.findByIdAndDelete(req.params.id);
+        if (!bien) {
+            res.status(404).send();
+        } else {
+            res.send(bien);
+        }
+    } catch (error) {
+        res.status(500).send(error);
+    }
+    /*
     Good.findByIdAndDelete(req.params.id).then((good) => {
         if (!good) {
             res.status(404).send();
@@ -210,5 +221,5 @@ goodRouter.delete('/goods/:id', (req, res) => {
         }
     }).catch(() => {
         res.status(400).send();
-    });
+    });*/
 });

@@ -1,14 +1,21 @@
-import { Document, Schema, model } from 'mongoose';
+import { Document, Schema, Types, model } from 'mongoose';
 
 // MAL IMPLEMENTADO
 // HAY QUE CREAR RELACIONES ENTRE LOS MODELOS GOOD, HUNTER y MERCHANT, autocalcular valor
-
+import { Good } from './goods.js';
+import { Hunter } from './hunters.js';
+import { Merchant } from './merchants.js';
 
 interface transactionsDocumentInterface extends Document {
   id: number,
   tipo: 'venta' | 'compra' | 'devolucion', // ENUM
-  fecha: string,
-  bien: string, //
+  fecha: Date,
+  cazador?: Types.ObjectId,
+  mercader?: Types.ObjectId,
+  bienes: {
+    bien: Types.ObjectId,
+    cantidad: number,
+  } [], //
   valor: number,
 }
 
@@ -22,17 +29,35 @@ const TransactionSchema = new Schema<transactionsDocumentInterface>({
     type: String,
     required: true,
     trim: true,
+    enum: ['venta', 'compra', 'devolucion'],
   },
   fecha: {
-    type: String,
+    type: Date,
     required: true,
-    trim: true,
+    default: Date.now,
   },
-  bien: {
-    type: String,
-    required: true,
-    trim: true,
+  cazador: {
+    type: Schema.Types.ObjectId,
+    ref: 'Hunter',
+    required: function() {return this.tipo === 'compra';},
   },
+  mercader: {
+    type: Schema.Types.ObjectId,
+    ref: 'Merchant',
+    required: function() { return this.tipo === 'venta';},
+  },
+  bienes: [{
+    bien: {
+      type: Schema.Types.ObjectId,
+      ref: 'Good',
+      required: true,
+    },
+    cantidad: {
+      type: Number,
+      required: true,
+      min: [1, 'Al menos 1 de cantidad'],
+    }
+  }],
   valor: {
     type: Number,
     required: true,
@@ -44,5 +69,12 @@ const TransactionSchema = new Schema<transactionsDocumentInterface>({
     }
   }
 });
+
+//valor de la transaccion
+/*TransactionSchema.pre('save', async function (next) {
+  let valorTotal = 0;
+
+  for (const item of )
+})*/
 
 export const Transaction = model<transactionsDocumentInterface>('Transaction', TransactionSchema);
