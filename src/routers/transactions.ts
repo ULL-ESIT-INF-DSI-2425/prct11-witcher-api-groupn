@@ -65,6 +65,28 @@ export const transactionRouter = express.Router();
 
 */
 
+/*
+POST http://localhost:3000/transactions
+EJEMPLO BODY POSTMAN
+(añadir antes hunter con nombre3 y bienes con nombre "Espada" y "Escudo")
+
+{
+    "id": 12,
+    "tipo": "compra",
+    "nombre": "nombre3",  
+    "bienes": [
+        {
+            "nombre": "Espada",
+            "cantidad": 3
+        },
+        {
+            "nombre": "Escudo",
+            "cantidad": 5
+        }
+    ]
+}
+
+*/
 
 transactionRouter.post('/transactions', async (req, res) => {
 

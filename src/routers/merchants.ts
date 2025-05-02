@@ -13,6 +13,17 @@ merchantRouter.post('/merchants', async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
     }
+/*
+POST http://localhost:3000/merchants
+EJEMPLO BODY POSTMAN
+{
+    "id": 2,
+    "nombre": "mercader2",
+    "tipo": "alquimista",
+    "ubicacion": "pantano norte"
+}
+
+*/
 
 
     /*merchant.save().then((merchant) => {

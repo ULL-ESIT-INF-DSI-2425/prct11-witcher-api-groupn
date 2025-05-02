@@ -14,6 +14,18 @@ hunterRouter.post('/hunters', async (req, res) => {
         res.status(500).send(error);
     }
 
+/*
+POST http://localhost:3000/hunters
+EJEMPLO BODY POSTMAN
+{
+    "id": 2,
+    "nombre": "nombre2",
+    "raza": "elfo",
+    "ubicacion": "casa seta"
+}
+
+*/
+
 
     /*hunter.save().then((hunter) => {
         res.status(201).send(hunter);

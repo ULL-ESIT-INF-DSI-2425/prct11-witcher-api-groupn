@@ -13,6 +13,20 @@ goodRouter.post('/goods', async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
     }
+/*
+POST http://localhost:3000/goods
+EJEMPLO BODY POSTMAN
+{
+    "id": 1,
+    "nombre": "bien1",
+    "descripcion": "descripcion1",
+    "material": "materialupdate1",
+    "peso": 10,
+    "valor": 200
+}
+
+*/
+
     /*
     bien.save().then((bien) => {
         res.status(201).send(bien);
