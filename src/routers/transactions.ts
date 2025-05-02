@@ -183,6 +183,83 @@ try {
 
 */
 
+// query string con nombre hunter/merchant
+transactionRouter.get('/transactions/nombre', async (req, res) => {
+    const filter = req.query.nombre?{nombre: req.query.nombre.toString()}:{};
+    
+    try {
+
+        const cazador = await Hunter.findOne(filter);
+        const mercader = await Merchant.findOne(filter);
+
+        if (!cazador && !mercader) {
+            res.status(404).send();
+            return;
+        }
+
+        let transaccionesHunter = [];
+        let transaccionesMerchant = [];
+
+        if (cazador) {
+            transaccionesHunter = await Transaction.find({cazador: cazador._id});
+        }
+        if (mercader) {
+            transaccionesMerchant = await Transaction.find({mercader: mercader._id});
+        }
+         
+        res.status(200).send([...transaccionesHunter, ...transaccionesMerchant]);
+
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
+
+//query string con fecha de inicio y fin además del tipo de transacciones (venta a cazadores, compras a mercaderes o ambas)
+transactionRouter.get('/transactions/fecha', async (req, res) => {
+    try {
+        
+        const {fechaInicio, fechaFin, tipo} = req.query;
+        const filtro: any = {};
+        
+        
+        if (fechaInicio) {
+            const fechaInicioDate = new Date(fechaInicio as string);
+            filtro.fecha = {...filtro.fecha, $gte: fechaInicioDate};
+        }
+
+        if (fechaFin) {
+            const fechaFinDate = new Date(fechaFin as string);
+            filtro.fecha = {...filtro.fecha, $lte: fechaFinDate};
+        }
+
+        if (tipo === 'compra' || tipo === 'venta' || tipo === 'devolucion') {
+            filtro.tipo = tipo;
+        }
+
+        const transacciones = await Transaction.find(filtro);
+        
+        res.status(200).send(transacciones);
+    }catch (error) {
+        res.status(500).send(error);
+    }
+});
+
+//identificador unico de la transaccion (parametro dinamico /transaction/:id)
+transactionRouter.get('/transactions/:id', async (req, res) => {
+    try {
+        const transaction = await Transaction.findById(req.params.id);
+
+        if (!transaction) {
+            res.status(404).send();
+        } else {
+            res.send(transaction);
+        }
+    } catch (error) {
+        res.status(500).send();
+    }
+});
+
+
 //patch
 /*
     SOLO a través del identificador unico de la transaccion (parametro dinamico /transaction/:id)
@@ -192,6 +269,5 @@ try {
 //delete
 /*
     SOLO a través del identificador unico de la transaccion (parametro dinamico /transaction/:id)
-
     Al borrar una transaccion de una compra de un hunter (una devolucion), se deberá actualizar el stock de los bienes involucrados en la misma
 */
