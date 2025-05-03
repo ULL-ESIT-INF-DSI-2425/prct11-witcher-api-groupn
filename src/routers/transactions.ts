@@ -27,45 +27,6 @@ export const transactionRouter = express.Router();
 
 //post
 /*
-
-    compra cazador / venta mercader
-
-    COMPRA cazador:
-        BIENES SOLICITADOS EXISTEN Y CON STOCK SUFICIENTE
-
-    COMPRA mercader:
-        Actualizar el stock de los bienes que ya existieran 
-        Y crear los nuevos que no existan.
-
-    Establecer la fecha y hora de la transaccion
-    Valor
-
-    Body de la peticion recibe la transaccion (compra de un hunter o venta de un mercader),
-    en el body debe de encontrarse: 
-    - nombre hunter/mercader.
-    - lista de nombres de bienes y las cantidades de cada uno de ellos.
-
-
-    La logica debe incorporar todo lo necesario para comprobar
-    que el hunter/mercader existe previamente.
-
-    En el caso de una compra de un Hunter se comprobará que 
-    los bienes solicitados existen y que hay stock suficiente para cada uno.
-
-    En el caso de una compra de un mercader se actualizará el stock de los bienes
-    que ya existieran en la base de datos y crear los nuevos que no existieran.
-
-    En ambos casos: establecer la fecha y hora de la transaccion, asi como 
-    calcular el importe asociado a traves del numero de unidades
-    especificado para cada bien involucrado en la transaccion.
-
-    (agrupar el codigo del manejador en diferentes funciones para que sea más legible.) <<<< FALTA
-
-    
-
-*/
-
-/*
 POST http://localhost:3000/transactions
 EJEMPLO BODY POSTMAN
 (añadir antes hunter con nombre3 y bienes con nombre "Espada" y "Escudo")
@@ -152,10 +113,6 @@ try {
         } else if (tipo === 'venta'){
             // si no se encontró el bien en la base de datos se crea un bien
             if (!bien) {
-                //if (!item.id || !item.nombre || !item.valor) {
-                //    res.status(400).send();
-                //    return;
-                //}
                 bien = new Good({
                     id: item.id,
                     nombre: nombre,
@@ -277,19 +234,189 @@ transactionRouter.get('/transactions/:id', async (req, res) => {
             res.send(transaction);
         }
     } catch (error) {
-        res.status(500).send();
+        res.status(500).send(error);
     }
 });
 
 
 //patch
-/*
-    SOLO a través del identificador unico de la transaccion (parametro dinamico /transaction/:id)
-    Actualizar la informacion referente a los bienes involucrado en la transaccion.
-*/ 
+transactionRouter.patch('/transactions/:id', async (req, res) => {
+
+    try {
+        const transaction = await Transaction.findById(req.params.id);
+        
+        if (!transaction) {
+            res.status(404).send();
+            return;
+        }
+
+        const persona = transaction.tipo === 'compra'
+        ? await Hunter.findById(transaction.cazador?._id)
+        : await Merchant.findById(transaction.mercader?._id);
+
+        if (!persona) {
+            res.status(404).send();
+            return;
+        }
+
+        const allowedUpdates = ['bienes'];
+        const actualUpdates = Object.keys(req.body);
+        const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
+
+        if (!isValidUpdate) {
+            res.status(400).send();
+        } else {
+
+           // const {bienes} = req.body;
+
+            const nuevosBienes = req.body.bienes;
+
+            if (!Array.isArray(nuevosBienes) || nuevosBienes.length === 0) {
+                res.status(400).send();
+                return;
+            }
+
+            for (const item of transaction.bienes) {
+                const bien = await Good.findById(item.bien);
+                if (!bien) {
+                    continue;
+                }
+
+                if (transaction.tipo === 'compra') {
+                    bien.stock += item.cantidad;
+                } else if (transaction.tipo === 'venta') {
+                    bien.stock -= item.cantidad;
+                }
+
+                if (bien.stock <= 0) {
+                    await Good.deleteOne({_id: bien._id});
+                } else {
+                    await bien.save();
+                }
+
+            }
+
+            let valorFinal = 0;
+            const bienesActualizados: {bien: Types.ObjectId; cantidad: number}[] = [];
+
+            for (const item of nuevosBienes) {
+                const bien = await Good.findOne({nombre: item.nombre});
+                if (!bien) {
+                    res.status(404).send();
+                    return;
+                }
+
+                if (transaction.tipo === 'compra') {
+                    if (bien.stock < item.cantidad) {
+                        res.status(400).send();
+                        return;
+                    }
+                    bien.stock -= item.cantidad;
+                    if (bien.stock <= 0) {
+                        await Good.deleteOne({_id: bien._id});
+                    } else {
+                        await bien.save();
+                    }
+                } else if (transaction.tipo === 'venta') {
+                    bien.stock += item.cantidad;
+                }
+                valorFinal += bien.valor * item.cantidad;
+                bienesActualizados.push({bien: bien._id as Types.ObjectId, cantidad: item.cantidad});
+                await bien.save();
+            }
+
+            transaction.bienes = bienesActualizados;
+            transaction.valor = valorFinal;
+            await transaction.save();
+            res.send(transaction);
+        }
+
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
+
 
 //delete
-/*
-    SOLO a través del identificador unico de la transaccion (parametro dinamico /transaction/:id)
-    Al borrar una transaccion de una compra de un hunter (una devolucion), se deberá actualizar el stock de los bienes involucrados en la misma
-*/
+transactionRouter.delete('/transactions/:id', async (req, res) => {
+
+    try {
+        const transaction = await Transaction.findById(req.params.id);
+
+        if (!transaction) {
+            res.status(404).send();
+            return;
+        }
+
+        const persona = transaction.tipo === 'compra'
+        ? await Hunter.findById(transaction.cazador?._id)
+        : await Merchant.findById(transaction.mercader?._id);
+
+        if (!persona) {
+            res.status(404).send();
+            return;
+        }
+        
+        const ultimaTransaction = await Transaction.findOne().sort({id: -1}).exec();
+        const newId = ultimaTransaction ? ultimaTransaction.id + 1 : 1;
+
+        //console.log(ultimaTransaction);
+
+        // AÑADIR BIENES Y ACTUALIZAR VALOR 234 y 55
+        const devolucionTransaction = new Transaction({
+            id: newId,
+            tipo: 'devolucion',
+            cazador: transaction.tipo === 'compra' ? persona._id : undefined,
+            mercader: transaction.tipo === 'venta' ? persona._id : undefined,
+            bienes: [],
+            fecha: new Date(),
+            valor: 1,
+        });
+
+        let valorDevolucion = 0;
+
+        for (const item of transaction.bienes) {
+            const bien = await Good.findById(item.bien);
+
+            // si el bien no existe en la base de datos no se puede llevar a cabo la devolucion
+            if (!bien) {
+                continue;
+            }
+
+            if (transaction.tipo === 'compra') {
+                // compra, la devolucion agrega al stock
+                bien.stock += item.cantidad;
+                valorDevolucion += bien.valor * item.cantidad;
+            } else if (transaction.tipo === 'venta') {
+                // venta, la devolucion resta el stock
+                if (bien.stock < item.cantidad) {
+                    res.status(400).send();
+                    return;
+                }
+
+                bien.stock -= item.cantidad;
+                valorDevolucion += bien.valor * item.cantidad;
+            }
+
+            devolucionTransaction.bienes.push({bien: bien._id as Types.ObjectId, cantidad: item.cantidad});
+            if (bien.stock <= 0) {
+                await Good.deleteOne({_id: bien._id});
+            } else {
+                await bien.save();
+            }
+            
+        }
+
+        devolucionTransaction.valor = valorDevolucion;
+
+        await devolucionTransaction.save();
+
+        await transaction.deleteOne({_id: transaction._id});
+
+        res.send(devolucionTransaction);
+
+
+    } catch (error) {
+        res.status(500).send(error);
+    }
+});
