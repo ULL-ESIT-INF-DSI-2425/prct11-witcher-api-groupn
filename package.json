@@ -9,8 +9,8 @@
     "comp": "tsc-watch",
     "dev": "tsc-watch --onSuccess \"env-cmd -f ./config/dev.env node dist/index.js\"",
     "doc": "typedoc --out ./docs ./src/**/*.ts",
-    "test": "vitest run",
-    "coverage": "vitest run --coverage --coverage.include 'src/**/*' --coverage.exclude src/db/*"
+    "test": "env-cmd -f ./config/test.env vitest run",
+    "coverage": "env-cmd -f ./config/test.env vitest run --coverage --coverage.include 'src/**/*' --coverage.exclude src/db/*"
   },
   "keywords": [],
   "author": "",

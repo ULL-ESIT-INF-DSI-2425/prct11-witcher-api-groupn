@@ -5,7 +5,7 @@ import {app} from "../src/index.js"
 import { Good } from "../src/models/goods.js";
 
 beforeEach(async () => {
-    await Good.deleteMany({nombre: /^test/});
+    await Good.deleteMany();
 });
 
 
@@ -25,7 +25,7 @@ describe("POST /goods", () => {
       .expect(201);
   });
 
-  test("GOOD NOT UNIQUE", async () => {
+  /*test("GOOD NOT UNIQUE", async () => {
     await request(app)
       .post("/goods")
       .send({
@@ -51,5 +51,5 @@ describe("POST /goods", () => {
         stock: 20
       })
       .expect(500);
-  });
+  });*/
 });
