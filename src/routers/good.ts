@@ -106,7 +106,7 @@ goodRouter.patch('/goods', async (req, res) => {
     } else if (!req.body) {
         res.status(400).send({error: 'Fields to be modified have to be provided in the request body',});
     } else {
-        const allowedUpdates = ['nombre', 'descripcion', 'material', 'peso', 'valor'];
+        const allowedUpdates = ['nombre', 'descripcion', 'material', 'peso', 'valor', 'stock'];
         const actualUpdates = Object.keys(req.body);
         const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
 
@@ -149,7 +149,7 @@ goodRouter.patch('/goods/:id', async (req, res) => {
     if (!req.body) {
         res.status(400).send({error: 'Fields to be modified have to be provided in the request body',});
     } else {
-        const allowedUpdates = ['nombre', 'descripcion', 'material', 'peso', 'valor'];
+        const allowedUpdates = ['nombre', 'descripcion', 'material', 'peso', 'valor', 'stock'];
         const actualUpdates = Object.keys(req.body);
         const isValidUpdate = actualUpdates.every((update) => allowedUpdates.includes(update));
 
