@@ -362,7 +362,7 @@ transactionRouter.delete('/transactions/:id', async (req, res) => {
 
         //console.log(ultimaTransaction);
 
-        // AÑADIR BIENES Y ACTUALIZAR VALOR 234 y 55
+        // AÑADIR BIENES Y ACTUALIZAR valor
         const devolucionTransaction = new Transaction({
             id: newId,
             tipo: 'devolucion',

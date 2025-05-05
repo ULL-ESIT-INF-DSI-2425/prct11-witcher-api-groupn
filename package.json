@@ -4,7 +4,9 @@
   "main": "basicFunctions.js",
   "type": "module",
   "scripts": {
-    "start": "tsc-watch",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "comp": "tsc-watch",
     "dev": "tsc-watch --onSuccess \"node dist/basicFunctions.js\"",
     "doc": "typedoc --out ./docs ./src/**/*.ts",
     "test": "vitest run",
