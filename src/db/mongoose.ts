@@ -18,9 +18,17 @@ connect(mongoURI).then(() => {
 })
 */
 
+try {
+  await connect(process.env.MONGODB_URL!);
+  console.log("Connection to MongoDB server established");
+} catch (error) {
+  console.log(error);
+}
 
+/*
 connect('mongodb://127.0.0.1:27017/witcher-api').then(() => {
   console.log('Connection to MongoDB server established');
 }).catch(() => {
   console.log('Unable to connect to MongoDB server');
 });
+*/
