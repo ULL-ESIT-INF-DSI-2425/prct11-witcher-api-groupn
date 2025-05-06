@@ -16,7 +16,7 @@ const MerchantSchema = new Schema<merchantsDocumentInterface>({
   nombre: {
     type: String,
     required: true,
-    //unique:true,
+    unique:true,
     trim: true,
   },
   tipo: {

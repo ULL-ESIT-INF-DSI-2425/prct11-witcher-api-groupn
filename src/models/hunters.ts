@@ -16,7 +16,7 @@ const HunterSchema = new Schema<huntersDocumentInterface>({
   nombre: {
     type: String,
     required: true,
-    //unique: true,
+    unique: true,
     trim: true,
   },
   raza: {
