@@ -1,5 +1,18 @@
 import { Document, Schema, model } from 'mongoose';
 
+/**
+ * Represents a document for a product item in the goods system.
+ *
+ * @interface goodsDocumentInterface
+ *
+ * @property {number} id - Unique identifier for the product.
+ * @property {string} nombre - Name of the product.
+ * @property {string} descripcion - Detailed description of the product.
+ * @property {string} material - Material composition of the product.
+ * @property {number} peso - Weight of the product.
+ * @property {number} valor - Monetary value assigned to the product.
+ * @property {number} stock - Available inventory count of the product.
+ */
 export interface goodsDocumentInterface extends Document {
   id: number,
   nombre: string,
