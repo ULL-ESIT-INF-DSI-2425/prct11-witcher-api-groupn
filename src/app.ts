@@ -1,4 +1,4 @@
-/*import express from 'express';
+import express from 'express';
 import './db/mongoose.js';
 import { goodRouter } from './routers/good.js';
 import { hunterRouter } from './routers/hunters.js';
@@ -15,11 +15,11 @@ app.use(hunterRouter);
 app.use(merchantRouter);
 app.use(transactionRouter);
 
-app.use(defaultRouter);*/
-import {app} from "./app.js";
-
+app.use(defaultRouter);
+/*
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {
     console.log(`Server is up on port ${port}`);
 });
+*/

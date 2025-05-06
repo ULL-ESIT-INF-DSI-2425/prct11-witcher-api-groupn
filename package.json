@@ -10,7 +10,7 @@
     "dev": "tsc-watch --onSuccess \"env-cmd -f ./config/dev.env node dist/index.js\"",
     "doc": "typedoc --out ./docs ./src/**/*.ts",
     "test": "env-cmd -f ./config/test.env vitest run",
-    "coverage": "env-cmd -f ./config/test.env vitest run --coverage --coverage.include 'src/**/*' --coverage.exclude src/db/*"
+    "coverage": "env-cmd -f ./config/test.env vitest run --coverage --coverage.include 'src/**/*' --coverage.exclude src/db/* --coverage.exclude src/index.ts"
   },
   "keywords": [],
   "author": "",

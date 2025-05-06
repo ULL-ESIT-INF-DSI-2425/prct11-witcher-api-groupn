@@ -1,6 +1,6 @@
 import { describe, test, beforeEach } from "vitest";
 import request from "supertest";
-import {app} from "../src/index.js"
+import { app } from "../src/app.js";
 
 import { Good } from "../src/models/goods.js";
 
