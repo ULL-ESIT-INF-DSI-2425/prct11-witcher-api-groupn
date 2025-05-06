@@ -68,13 +68,21 @@ try {
     }
 
     //console.log(tipo, nombre, bienes);
-    const persona = tipo === 'compra'
-    ? await Hunter.findOne({nombre})
-    : await Merchant.findOne({nombre});
+    let persona;
+    if (tipo === "compra") {
+        persona = await Hunter.findOne({nombre});
+    } else {
+        persona = await Merchant.findOne({nombre});
+    };
+    // const persona = tipo === 'compra'
+    // ? await Hunter.findOne({nombre})
+    // : await Merchant.findOne({nombre});
+    console.log("persona: ", persona);
 
     //console.log(persona);
     // comprobar si cazador/mercader existe
     if (!persona) {
+        console.log("Canario 0");
         res.status(404).send();
         return;
     }
@@ -91,6 +99,7 @@ try {
         //para tipo compra
         if (tipo === 'compra') {
             if (!bien) {
+                console.log("Canario 8");
                 res.status(404).send();
                 return;
             }
@@ -172,6 +181,7 @@ transactionRouter.get('/transactions/nombre', async (req, res) => {
         const mercader = await Merchant.findOne(filter);
 
         if (!cazador && !mercader) {
+            console.log("Canario 7");
             res.status(404).send();
             return;
         }
@@ -229,6 +239,7 @@ transactionRouter.get('/transactions/:id', async (req, res) => {
         const transaction = await Transaction.findById(req.params.id);
 
         if (!transaction) {
+            console.log("Canario 1");
             res.status(404).send();
         } else {
             res.send(transaction);
@@ -246,6 +257,7 @@ transactionRouter.patch('/transactions/:id', async (req, res) => {
         const transaction = await Transaction.findById(req.params.id);
         
         if (!transaction) {
+            console.log("Canario 2");
             res.status(404).send();
             return;
         }
@@ -255,6 +267,7 @@ transactionRouter.patch('/transactions/:id', async (req, res) => {
         : await Merchant.findById(transaction.mercader?._id);
 
         if (!persona) {
+            console.log("Canario 3");
             res.status(404).send();
             return;
         }
@@ -302,6 +315,7 @@ transactionRouter.patch('/transactions/:id', async (req, res) => {
             for (const item of nuevosBienes) {
                 const bien = await Good.findOne({nombre: item.nombre});
                 if (!bien) {
+                    console.log("Canario 4");
                     res.status(404).send();
                     return;
                 }
@@ -344,6 +358,7 @@ transactionRouter.delete('/transactions/:id', async (req, res) => {
         const transaction = await Transaction.findById(req.params.id);
 
         if (!transaction) {
+            console.log("Canario 5");
             res.status(404).send();
             return;
         }
@@ -353,6 +368,7 @@ transactionRouter.delete('/transactions/:id', async (req, res) => {
         : await Merchant.findById(transaction.mercader?._id);
 
         if (!persona) {
+            console.log("Canario 6");
             res.status(404).send();
             return;
         }

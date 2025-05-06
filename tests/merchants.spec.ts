@@ -21,7 +21,8 @@ beforeEach(async () => {
 });
 
 
-describe("POST /mencharts", () => {
+
+describe("POST /merchants", () => {
   test("Should successfully create a new merchant", async () => {
     const response = await request(app)
       .post("/merchants")
