@@ -1,5 +1,16 @@
 import { Document, Schema, model } from 'mongoose';
 
+/**
+ * Interfaz que representa un documento de bien en la base de datos.
+ * @extends Document
+ * @property id - Identificador único del bien
+ * @property nombre - Nombre del bien
+ * @property descripcion - Descripción del bien
+ * @property material - Material del que está hecho el bien
+ * @property peso - Peso del bien en kilogramos
+ * @property valor - Valor económico del bien
+ * @property stock - Unidades disponibles del bien
+ */
 export interface goodsDocumentInterface extends Document {
   id: number,
   nombre: string,
@@ -10,6 +21,9 @@ export interface goodsDocumentInterface extends Document {
   stock: number,
 }
 
+/**
+ * Esquema de Mongoose que define la estructura de los documentos de tipo bien.
+ */
 const GoodSchema = new Schema<goodsDocumentInterface>({
   id: {
     type: Number,
