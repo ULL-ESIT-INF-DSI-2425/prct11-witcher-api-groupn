@@ -16,7 +16,7 @@ const firstMerchant = {
 
 
 beforeEach(async () => {
-    await Merchant.deleteMany();
+    await Merchant.deleteMany({nombre: {$in: ["testmerchant", "test merchant2", "testupdatedmerchant"]}});
     insertedMerchant = await new Merchant(firstMerchant).save();
 });
 
@@ -90,7 +90,7 @@ describe("GET /hunters/:id", () => {
 describe("patch /hunters", () => {
     test("ID not provided", async () => {
       await request(app).patch(`/merchants`).send({
-        nombre: "testhunter",
+        nombre: "testupdatedmerchant",
         tipo: "herrero",
         ubicacion: "lago norte"
       }).expect(400);
@@ -122,7 +122,7 @@ describe("patch /hunters", () => {
     test("Invalid update body", async () => {
         await request(app).patch(`/merchants?id=1`).send({
           id: 10,
-          nombre: "testhunter",
+          nombre: "testupdatedmerchant",
           tipo: "herrero",
           ubicacion: "lago norte"
         }).expect(400);
@@ -130,7 +130,7 @@ describe("patch /hunters", () => {
 
     test("hunter not found", async () => {
         await request(app).patch(`/merchants?id=999`).send({
-            nombre: "testhunter",
+            nombre: "testupdatedmerchant",
             tipo: "herrero",
             ubicacion: "lago norte"
         }).expect(404);
@@ -156,7 +156,7 @@ describe("patch /merchants/:id", () => {
   
     test("Should modify a hunter", async () => {
         await request(app).patch(`/merchants/${insertedMerchant._id}`).send({
-            nombre: "testhunter",
+            nombre: "testupdatedmerchant",
         tipo: "herrero",
         ubicacion: "lago norte"
         }).expect(200);
@@ -165,7 +165,7 @@ describe("patch /merchants/:id", () => {
     test("Invalid update body", async () => {
         await request(app).patch(`/merchants/${insertedMerchant._id}`).send({
             id: 20,
-            nombre: "testhunter",
+            nombre: "testupdatedmerchant",
         tipo: "herrero",
         ubicacion: "lago norte"
         }).expect(400);
@@ -173,7 +173,7 @@ describe("patch /merchants/:id", () => {
 
     test("hunter not found", async () => {
         await request(app).patch(`/merchants/aaaaaaaaaaaaaaaaaaaaaaaa`).send({
-            nombre: "testhunter",
+            nombre: "testupdatedmerchant",
         tipo: "herrero",
         ubicacion: "lago norte"
         }).expect(404);
@@ -181,7 +181,7 @@ describe("patch /merchants/:id", () => {
 
     test("error hunter", async () => {
         await request(app).patch(`/merchants/0000000`).send({
-            nombre: "testhunter",
+            nombre: "testupdatedmerchant",
         tipo: "herrero",
         ubicacion: "lago norte"
         }).expect(500);

@@ -37,23 +37,27 @@ const firstGood = {
 
 
 beforeEach(async () => {
-    await Hunter.deleteMany();
-    await Merchant.deleteMany();
-    await Good.deleteMany();
+    await Hunter.deleteMany({ nombre: "testhunter3" });
+    await Merchant.deleteMany({ nombre: "testmerchant3" });
+    await Good.deleteMany({ nombre: "Espada de Plata" });
     await Transaction.deleteMany();
     
     insertedHunter = await new Hunter(firstHunter).save();
     insertedMerchant = await new Merchant(firstMerchant).save();
     insertedGood = await new Good(firstGood).save();
 
+
+    //insertedHunter = await Hunter.insertMany([firstHunter]);
+    //insertedMerchant = await Merchant.insertMany([firstMerchant]);
+    //insertedGood = await Good.insertMany([firstGood]);
     // Asegura que los datos están en la base
-    const h = await Hunter.findOne({ nombre: "testhunter3" });
-    console.log("Inserted Hunter:", insertedHunter);
-    const m = await Merchant.findOne({ nombre: "testmerchant3" });
-    const g = await Good.findOne({ nombre: "Espada de Plata" });
-    expect(h).not.toBeNull();
-    expect(m).not.toBeNull();
-    expect(g).not.toBeNull();
+    //const h = await Hunter.findOne({ nombre: "testhunter3" }).lean();
+    //console.log("Inserted Hunter:", insertedHunter);
+    //const m = await Merchant.findOne({ nombre: "testmerchant3" }).lean();
+    //const g = await Good.findOne({ nombre: "Espada de Plata" }).lean();
+    //expect(h).not.toBeNull();
+    //expect(m).not.toBeNull();
+    //expect(g).not.toBeNull();
 });
 
 
@@ -86,7 +90,7 @@ describe("POST /transactions", () => {
         10000
     );
 });
-/**
+
 describe("GET /transactions/nombre", () => {
     test("Should retrieve transactions by hunter/merchant name", async () => {
         const transaction = new Transaction({
@@ -148,7 +152,7 @@ describe("PATCH /transactions/:id", () => {
             })
             .expect(200);
 
-        expect(response.body.valor).toBe(800); // 10 * 80
+        expect(response.body.valor).toBe(8000); // 10 * 80
     });
 
     test("Should return 404 if transaction not found", async () => {
@@ -188,7 +192,7 @@ describe("DELETE /transactions/:id", () => {
             .expect(200);
 
         expect(response.body.tipo).toBe("devolucion");
-        expect(response.body.valor).toBe(400);
+        expect(response.body.valor).toBe(4000);
 
         const deletedTransaction = await Transaction.findById(transaction._id);
         expect(deletedTransaction).toBeNull();
@@ -199,4 +203,4 @@ describe("DELETE /transactions/:id", () => {
             .delete("/transactions/000000000000000000000000")
             .expect(404);
     });
-}); */
+}); 

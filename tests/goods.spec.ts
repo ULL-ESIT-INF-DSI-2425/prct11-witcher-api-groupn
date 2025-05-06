@@ -18,7 +18,7 @@ const firstGood = {
 }
 
 beforeEach(async () => {
-    await Good.deleteMany();
+    await Good.deleteMany({nombre: {$in: ["espada", "armadura"]}});
     insertedGood = await new Good(firstGood).save();
 });
 

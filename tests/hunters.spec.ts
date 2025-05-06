@@ -14,7 +14,7 @@ const firstHunter = {
 }
 
 beforeEach(async () => {
-    await Hunter.deleteMany();
+    await Hunter.deleteMany({nombre: {$in: ["testhunter", "test hunter2"]}});
     insertedHunter = await new Hunter(firstHunter).save();
 });
 
