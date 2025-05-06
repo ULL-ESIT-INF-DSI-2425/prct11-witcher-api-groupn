@@ -1,4 +1,4 @@
-import { describe, test, beforeEach } from "vitest";
+import { describe, test, beforeEach, expect } from "vitest";
 import request from "supertest";
 import { app } from "../src/app.js";
 
@@ -26,7 +26,7 @@ beforeEach(async () => {
 
 describe("POST /goods", () => {
   test("Should successfully create a new good", async () => {
-    await request(app)
+    const response = await request(app)
       .post("/goods")
       .send({
         id: 2,
@@ -38,6 +38,20 @@ describe("POST /goods", () => {
         stock: 20
       })
       .expect(201);
+
+      expect(response.body).to.include({
+        id: 2,
+        nombre: "armadura",
+        descripcion: "armadura de hierro",
+        material: "hierro",
+        peso: 20,
+        valor: 50,
+        stock: 20
+      });
+
+      const secondGood = await Good.findById(response.body._id);
+      expect(secondGood).not.toBe(null);
+      expect(secondGood!.nombre).to.equal("armadura");
   });
 
   test("Should get an error", async () => {
@@ -61,7 +75,19 @@ describe("GET /goods", () => {
 
 describe("GET /goods/:id", () => {
     test("Should get a good by _id", async () => {
-      await request(app).get(`/goods/${insertedGood._id}`).expect(200);
+      const response = await request(app).get(`/goods/${insertedGood._id}`).expect(200);
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "espada",
+        descripcion: "espada de acero", 
+        material: "acero",
+        peso: 10,
+        valor: 80,
+        stock: 200
+      });
+
+
     });
   
     test("Should not find a good by _id", async () => {
@@ -90,7 +116,7 @@ describe("patch /goods", () => {
     });
   
     test("Should modify a good", async () => {
-        await request(app).patch(`/goods?id=1`).send({
+        const response = await request(app).patch(`/goods?id=1`).send({
           nombre: "espada",
           descripcion: "espada de acero", 
           material: "acero",
@@ -98,6 +124,21 @@ describe("patch /goods", () => {
           valor: 80,
           stock: 200
         }).expect(200);
+
+        expect(response.body).to.include({
+          id: 1,
+          nombre: "espada",
+          descripcion: "espada de acero", 
+          material: "acero",
+          peso: 999,
+          valor: 80,
+          stock: 200
+        });
+
+        const updatedGood = await Good.findById(response.body._id);
+        expect(updatedGood).not.toBe(null);
+        expect(updatedGood!.peso).to.equal(999);
+
     });
 
     test("Invalid update body", async () => {
@@ -142,7 +183,7 @@ describe("patch /goods/:id", () => {
     });
   
     test("Should modify a good", async () => {
-        await request(app).patch(`/goods/${insertedGood._id}`).send({
+        const response = await request(app).patch(`/goods/${insertedGood._id}`).send({
           nombre: "espada",
           descripcion: "espada de acero", 
           material: "acero",
@@ -150,6 +191,21 @@ describe("patch /goods/:id", () => {
           valor: 80,
           stock: 200
         }).expect(200);
+
+        expect(response.body).to.include({
+          id: 1,
+          nombre: "espada",
+          descripcion: "espada de acero", 
+          material: "acero",
+          peso: 990,
+          valor: 80,
+          stock: 200
+        });
+
+        const updatedGood = await Good.findById(response.body._id);
+        expect(updatedGood).not.toBe(null);
+        expect(updatedGood!.peso).to.equal(990);
+
     });
 
     test("Invalid update body", async () => {
@@ -189,7 +245,21 @@ describe("patch /goods/:id", () => {
 
 describe("DELETE /goods", () => {
     test("Should delete a good by id", async () => {
-      await request(app).delete("/goods?id=1").expect(200);
+      const response = await request(app).delete("/goods?id=1").expect(200);
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "espada",
+        descripcion: "espada de acero", 
+        material: "acero",
+        peso: 10,
+        valor: 80,
+        stock: 200
+      });
+
+      const deletedGood = await Good.findById(response.body._id);
+      expect(deletedGood).toBe(null);
+      //expect(deletedGood!.peso).to.equal(999);
     });
 
     test("delete good no querystring", async () => {
@@ -203,7 +273,21 @@ describe("DELETE /goods", () => {
 
 describe("DELETE /goods/:id", () => {
     test("Should get a good by _id", async () => {
-      await request(app).delete(`/goods/${insertedGood._id}`).expect(200);
+      const response = await request(app).delete(`/goods/${insertedGood._id}`).expect(200);
+
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "espada",
+        descripcion: "espada de acero", 
+        material: "acero",
+        peso: 10,
+        valor: 80,
+        stock: 200
+      });
+
+      const deletedGood = await Good.findById(response.body._id);
+      expect(deletedGood).toBe(null);
     });
   
     test("Should not find a good by _id", async () => {
