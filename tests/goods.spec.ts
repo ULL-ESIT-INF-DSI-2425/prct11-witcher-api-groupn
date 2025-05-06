@@ -216,4 +216,8 @@ describe("DELETE /goods/:id", () => {
 });
 
 
-
+describe("DEFAULT ROUTER /goods", () => {
+  test("default router", async () => {
+    await request(app).get("/noexiste").expect(501);
+  });
+});
