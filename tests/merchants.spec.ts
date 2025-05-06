@@ -1,13 +1,8 @@
-import { describe, test, beforeEach } from "vitest";
+import { describe, test, beforeEach, expect } from "vitest";
 import request from "supertest";
 import { app } from "../src/app.js";
 
-//import { Good } from "../src/models/goods.js";
-
-//import { Hunter } from "../src/models/hunters.js";
 import { Merchant } from "../src/models/merchants.js";
-
-// TAMBIEN DEBE COMPROBAR EL CONTENIDO DE LOS CUERPOS DE LAS RESPUESTAS Y EL ESTADO DE LAS COLECCIONES EN LA BASE DE DATOS
 
 
 let insertedMerchant;
@@ -20,16 +15,6 @@ const firstMerchant = {
 }
 
 
-/*const firstGood = {
-    id: 1,
-    nombre: "espada",
-    descripcion: "espada de acero", 
-    material: "acero",
-    peso: 10,
-    valor: 80,
-    stock: 200
-}*/
-
 beforeEach(async () => {
     await Merchant.deleteMany();
     insertedMerchant = await new Merchant(firstMerchant).save();
@@ -38,7 +23,7 @@ beforeEach(async () => {
 
 describe("POST /mencharts", () => {
   test("Should successfully create a new merchant", async () => {
-    await request(app)
+    const response = await request(app)
       .post("/merchants")
       .send({
         id: 2,
@@ -47,6 +32,17 @@ describe("POST /mencharts", () => {
         ubicacion: "arbol"
       })
       .expect(201);
+
+      expect(response.body).to.include({
+        id: 2,
+        nombre: "test merchant2",
+        tipo: "herrero",
+        ubicacion: "arbol"
+      });
+      
+      const secondMerchant = await Merchant.findById(response.body._id);
+      expect(secondMerchant).not.toBe(null);
+      expect(secondMerchant!.nombre).to.equal("test merchant2");
   });
 
   test("Should get an error", async () => {
@@ -70,7 +66,15 @@ describe("GET /hunters", () => {
 
 describe("GET /hunters/:id", () => {
     test("Should get a hunter by _id", async () => {
-      await request(app).get(`/merchants/${insertedMerchant._id}`).expect(200);
+      const response = await request(app).get(`/merchants/${insertedMerchant._id}`).expect(200);
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "testmerchant",
+        tipo: "herrero",
+        ubicacion: "arbol caido"
+      });
+
     });
   
     test("Should not find a hunter by _id", async () => {
@@ -96,11 +100,22 @@ describe("patch /hunters", () => {
     });
   
     test("Should modify a hunter", async () => {
-        await request(app).patch(`/merchants?id=1`).send({
-            nombre: "testhunter",
+        const response = await request(app).patch(`/merchants?id=1`).send({
+            nombre: "testupdatedmerchant",
             tipo: "herrero",
             ubicacion: "lago norte"
         }).expect(200);
+
+        expect(response.body).to.include({
+            id: 1,
+            nombre: "testupdatedmerchant",
+            tipo: "herrero",
+            ubicacion: "lago norte"
+        });
+        
+        const updatedMerchant = await Merchant.findById(response.body._id);
+        expect(updatedMerchant).not.toBe(null);
+        expect(updatedMerchant!.nombre).to.equal("testupdatedmerchant");
     });
 
     test("Invalid update body", async () => {

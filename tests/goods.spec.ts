@@ -4,7 +4,6 @@ import { app } from "../src/app.js";
 
 import { Good } from "../src/models/goods.js";
 
-// TAMBIEN DEBE COMPROBAR EL CONTENIDO DE LOS CUERPOS DE LAS RESPUESTAS Y EL ESTADO DE LAS COLECCIONES EN LA BASE DE DATOS
 
 let insertedGood;
 
@@ -167,17 +166,6 @@ describe("patch /goods", () => {
 
   
 describe("patch /goods/:id", () => {
-    /*test("ID not provided", async () => {
-      await request(app).patch(`/goods`).send({
-        nombre: "espada",
-        descripcion: "espada de acero", 
-        material: "acero",
-        peso: 999,
-        valor: 80,
-        stock: 200
-      }).expect(400);
-    });*/
-
     test("BODY not provided", async () => {
         await request(app).patch(`/goods/${insertedGood._id}`).expect(400);
     });

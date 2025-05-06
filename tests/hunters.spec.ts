@@ -1,14 +1,9 @@
-import { describe, test, beforeEach } from "vitest";
+import { describe, test, beforeEach, expect } from "vitest";
 import request from "supertest";
 import { app } from "../src/app.js";
 
-//import { Good } from "../src/models/goods.js";
-
 import { Hunter } from "../src/models/hunters.js";
 
-// TAMBIEN DEBE COMPROBAR EL CONTENIDO DE LOS CUERPOS DE LAS RESPUESTAS Y EL ESTADO DE LAS COLECCIONES EN LA BASE DE DATOS
-
-//let insertedGood;
 let insertedHunter;
 
 const firstHunter = {
@@ -18,16 +13,6 @@ const firstHunter = {
     ubicacion: "lago sur"
 }
 
-/*const firstGood = {
-    id: 1,
-    nombre: "espada",
-    descripcion: "espada de acero", 
-    material: "acero",
-    peso: 10,
-    valor: 80,
-    stock: 200
-}*/
-
 beforeEach(async () => {
     await Hunter.deleteMany();
     insertedHunter = await new Hunter(firstHunter).save();
@@ -36,7 +21,7 @@ beforeEach(async () => {
 
 describe("POST /hunters", () => {
   test("Should successfully create a new hunter", async () => {
-    await request(app)
+    const response = await request(app)
       .post("/hunters")
       .send({
         id: 2,
@@ -45,6 +30,17 @@ describe("POST /hunters", () => {
         ubicacion: "arbol"
       })
       .expect(201);
+
+      expect(response.body).to.include({
+        id: 2,
+        nombre: "test hunter2",
+        raza: "humano",
+        ubicacion: "arbol"
+      });
+      
+      const secondHunter = await Hunter.findById(response.body._id);
+      expect(secondHunter).not.toBe(null);
+      expect(secondHunter!.nombre).to.equal("test hunter2");
   });
 
   test("Should get an error", async () => {
@@ -68,7 +64,15 @@ describe("GET /hunters", () => {
 
 describe("GET /hunters/:id", () => {
     test("Should get a hunter by _id", async () => {
-      await request(app).get(`/hunters/${insertedHunter._id}`).expect(200);
+      const response = await request(app).get(`/hunters/${insertedHunter._id}`).expect(200);
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "testhunter",
+        raza: "humano",
+        ubicacion: "lago sur"
+      });
+
     });
   
     test("Should not find a hunter by _id", async () => {
@@ -94,11 +98,24 @@ describe("patch /hunters", () => {
     });
   
     test("Should modify a hunter", async () => {
-        await request(app).patch(`/hunters?id=1`).send({
+        const response = await request(app).patch(`/hunters?id=1`).send({
             nombre: "testhunter",
             raza: "humano",
             ubicacion: "lago norte"
         }).expect(200);
+
+        expect(response.body).to.include({
+          id: 1,
+          nombre: "testhunter",
+          raza: "humano",
+          ubicacion: "lago norte"
+        });
+
+        const updatedHunter = await Hunter.findById(response.body._id);
+        expect(updatedHunter).not.toBe(null);
+        expect(updatedHunter!.ubicacion).to.equal("lago norte");
+
+
     });
 
     test("Invalid update body", async () => {
@@ -121,27 +138,28 @@ describe("patch /hunters", () => {
 
   
 describe("patch /hunters/:id", () => {
-    /*test("ID not provided", async () => {
-      await request(app).patch(`/goods`).send({
-        nombre: "espada",
-        descripcion: "espada de acero", 
-        material: "acero",
-        peso: 999,
-        valor: 80,
-        stock: 200
-      }).expect(400);
-    });*/
 
     test("BODY not provided", async () => {
         await request(app).patch(`/hunters/${insertedHunter._id}`).expect(400);
     });
   
     test("Should modify a hunter", async () => {
-        await request(app).patch(`/hunters/${insertedHunter._id}`).send({
+        const response = await request(app).patch(`/hunters/${insertedHunter._id}`).send({
             nombre: "testhunter",
             raza: "humano",
             ubicacion: "lago norte"
         }).expect(200);
+
+        expect(response.body).to.include({
+          id: 1,
+          nombre: "testhunter",
+          raza: "humano",
+          ubicacion: "lago norte"
+        });
+
+        const updatedHunter = await Hunter.findById(response.body._id);
+        expect(updatedHunter).not.toBe(null);
+        expect(updatedHunter!.ubicacion).to.equal("lago norte");
     });
 
     test("Invalid update body", async () => {
@@ -172,7 +190,18 @@ describe("patch /hunters/:id", () => {
 
 describe("DELETE /hunters", () => {
     test("Should delete a hunter by id", async () => {
-      await request(app).delete("/hunters?id=1").expect(200);
+      const response = await request(app).delete("/hunters?id=1").expect(200);
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "testhunter",
+        raza: "humano",
+        ubicacion: "lago sur"
+      });
+
+      const deletedHunter = await Hunter.findById(response.body._id);
+      expect(deletedHunter).toBe(null);
+      //expect(updatedHunter!.ubicacion).to.equal("lago norte");
     });
 
     test("delete hunter no querystring", async () => {
@@ -186,7 +215,17 @@ describe("DELETE /hunters", () => {
 
 describe("DELETE /hunters/:id", () => {
     test("Should get a hunter by _id", async () => {
-      await request(app).delete(`/hunters/${insertedHunter._id}`).expect(200);
+      const response = await request(app).delete(`/hunters/${insertedHunter._id}`).expect(200);
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "testhunter",
+        raza: "humano",
+        ubicacion: "lago sur"
+      });
+
+      const deletedHunter = await Hunter.findById(response.body._id);
+      expect(deletedHunter).toBe(null);
     });
   
     test("Should not find a hunter by _id", async () => {
