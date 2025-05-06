@@ -6,6 +6,17 @@ import { Good } from './goods.js';
 import { Hunter } from './hunters.js';
 import { Merchant } from './merchants.js';
 
+/**
+ * Interfaz que representa un documento de transacción en la base de datos.
+ * @extends Document
+ * @property id - Identificador único de la transacción
+ * @property tipo - Tipo de transacción (venta, compra o devolución)
+ * @property fecha - Fecha en la que se realizó la transacción
+ * @property cazador - Referencia al cazador involucrado (si aplica)
+ * @property mercader - Referencia al mercader involucrado (si aplica)
+ * @property bienes - Lista de bienes involucrados junto con su cantidad
+ * @property valor - Valor total de la transacción
+ */
 interface transactionsDocumentInterface extends Document {
   id: number,
   tipo: 'venta' | 'compra' | 'devolucion', // ENUM
@@ -19,6 +30,9 @@ interface transactionsDocumentInterface extends Document {
   valor: number,
 }
 
+/**
+ * Esquema de Mongoose que define la estructura de los documentos de tipo transacción.
+ */
 const TransactionSchema = new Schema<transactionsDocumentInterface>({
   id: {
     type: Number,
@@ -77,4 +91,7 @@ const TransactionSchema = new Schema<transactionsDocumentInterface>({
   for (const item of )
 })*/
 
+/**
+ * Modelo de Mongoose para la colección de transacciones.
+ */
 export const Transaction = model<transactionsDocumentInterface>('Transaction', TransactionSchema);
