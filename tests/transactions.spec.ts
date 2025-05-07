@@ -204,3 +204,61 @@ describe("DELETE /transactions/:id", () => {
             .expect(404);
     });
 }); 
+
+
+describe("POST /transactions - error cases", () => {
+    test("Should return 400 if transaction id already exists", async () => {
+      await new Transaction({ id: 3, tipo: "compra", cazador: insertedHunter._id, bienes: [], valor: 0, fecha: new Date() }).save();
+  
+      await request(app)
+        .post("/transactions")
+        .send({ id: 3, tipo: "compra", nombre: "testhunter3", bienes: [] })
+        .expect(400);
+    });
+  
+    test("Should return 400 if tipo is invalid", async () => {
+      await request(app)
+        .post("/transactions")
+        .send({ id: 4, tipo: "invalid", nombre: "testhunter3", bienes: [] })
+        .expect(400);
+    });
+  
+    test("Should return 404 if hunter/merchant not found", async () => {
+      await request(app)
+        .post("/transactions")
+        .send({ id: 4, tipo: "compra", nombre: "nonexistent", bienes: [] })
+        .expect(404);
+    });
+  
+    test("Should return 404 if good not found in compra", async () => {
+      await request(app)
+        .post("/transactions")
+        .send({ id: 4, tipo: "compra", nombre: "testhunter3", bienes: [{ nombre: "NoExiste", cantidad: 1 }] })
+        .expect(404);
+    });
+  
+    test("Should return 400 if not enough stock in compra", async () => {
+      await request(app)
+        .post("/transactions")
+        .send({ id: 4, tipo: "compra", nombre: "testhunter3", bienes: [{ nombre: "Espada de Plata", cantidad: 1000 }] })
+        .expect(400);
+    });
+  });
+  
+  describe("GET /transactions/fecha", () => {
+    test("Should return empty list if no transactions in date range", async () => {
+      const response = await request(app)
+        .get("/transactions/fecha?fechaInicio=1990-01-01&fechaFin=1990-12-31")
+        .expect(200);
+  
+      expect(Array.isArray(response.body)).toBe(true);
+      expect(response.body.length).toBe(0);
+    });
+  });
+  
+  describe("GET /transactions/:id", () => {
+    test("Should return 404 if transaction not found", async () => {
+      await request(app).get("/transactions/000000000000000000000000").expect(404);
+    });
+  });
+  
