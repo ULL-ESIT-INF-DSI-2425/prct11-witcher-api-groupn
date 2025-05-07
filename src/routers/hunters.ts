@@ -1,9 +1,15 @@
 import express from 'express';
 import { Hunter } from '../models/hunters.js';
 
+/**
+ * Enrutador para operaciones CRUD sobre cazadores.
+ */
 export const hunterRouter = express.Router();
 
-//post
+/**
+ * Crea un nuevo cazador.
+ * @returns 201 Created o 500 Internal Server Error
+ */
 hunterRouter.post('/hunters', async (req, res) => {
     const hunter = new Hunter(req.body);
 
@@ -34,7 +40,10 @@ EJEMPLO BODY POSTMAN
     });*/
 });
 
-//get
+/**
+ * Obtiene todos los cazadores o filtra por nombre.
+ * @returns 200 OK o 400/404/500 según el caso
+ */
 hunterRouter.get('/hunters', async (req, res) => {
 
     //const filter = req.query.nombre?{nombre: req.query.nombre.toString()}:{};
@@ -77,6 +86,11 @@ hunterRouter.get('/hunters', async (req, res) => {
     });*/
 });
 
+/**
+ * Obtiene un cazador por su ID.
+ * @param id - ID del cazador
+ * @returns 200 OK o 404/500 según el caso
+ */
 hunterRouter.get('/hunters/:id', async (req, res) => {
 
     try {
@@ -102,7 +116,10 @@ hunterRouter.get('/hunters/:id', async (req, res) => {
     });*/
 });
 
-//patch
+/**
+ * Modifica un cazador usando su ID como query string.
+ * @returns 200 OK o error
+ */
 hunterRouter.patch('/hunters', async (req, res) => {
     if (!req.query.id) {
         res.status(400).send({error: 'An id must be provided in the query string',});
@@ -148,6 +165,11 @@ hunterRouter.patch('/hunters', async (req, res) => {
     }
 });
 
+/**
+ * Modifica un cazador usando su ID como parámetro de ruta.
+ * @param id - ID del cazador a actualizar
+ * @returns 200 OK o error
+ */
 hunterRouter.patch('/hunters/:id', async (req, res) => {
     if (!req.body) {
         res.status(400).send({error: 'Fields to be modified have to be provided in the request body',});
@@ -191,7 +213,10 @@ hunterRouter.patch('/hunters/:id', async (req, res) => {
     }
 });
 
-//delete
+/**
+ * Elimina un cazador usando su ID como query string.
+ * @returns 200 OK o error
+ */
 hunterRouter.delete('/hunters', async (req, res) => {
     if (!req.query.id) {
         res.status(400).send({error: 'An id must be provided',});
@@ -220,6 +245,11 @@ hunterRouter.delete('/hunters', async (req, res) => {
     }
 });
 
+/**
+ * Elimina un cazador usando su ID como parámetro de ruta.
+ * @param id - ID del cazador a eliminar
+ * @returns 200 OK o error
+ */
 hunterRouter.delete('/hunters/:id', async (req, res) => {
     try {
         const hunter = await Hunter.findByIdAndDelete(req.params.id);
