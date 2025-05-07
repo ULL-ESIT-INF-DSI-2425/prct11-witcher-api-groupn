@@ -9,6 +9,9 @@ import { goodsDocumentInterface } from '../models/goods.js';
 
 import { Document, Schema, Types, model } from 'mongoose';
 
+/**
+ * Enrutador para operaciones CRUD sobre transacciones.
+ */
 export const transactionRouter = express.Router();
 
 /*
@@ -49,6 +52,10 @@ EJEMPLO BODY POSTMAN
 
 */
 
+/**
+ * Crea una nueva transacción (compra o venta).
+ * @returns 201 Created o errores 400/404/500
+ */
 transactionRouter.post('/transactions', async (req, res) => {
 
 try {
@@ -171,7 +178,10 @@ try {
 
 */
 
-// query string con nombre hunter/merchant
+/**
+ * Obtiene transacciones asociadas al nombre de un hunter o merchant.
+ * @returns 200 OK con las transacciones o errores 404/500
+ */
 transactionRouter.get('/transactions/nombre', async (req, res) => {
     const filter = req.query.nombre?{nombre: req.query.nombre.toString()}:{};
     
@@ -203,7 +213,10 @@ transactionRouter.get('/transactions/nombre', async (req, res) => {
     }
 });
 
-//query string con fecha de inicio y fin además del tipo de transacciones (venta a cazadores, compras a mercaderes o ambas)
+/**
+ * Filtra transacciones por rango de fechas y tipo.
+ * @returns 200 OK con las transacciones o error 500
+ */
 transactionRouter.get('/transactions/fecha', async (req, res) => {
     try {
         
