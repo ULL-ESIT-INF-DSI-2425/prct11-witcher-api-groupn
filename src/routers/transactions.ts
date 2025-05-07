@@ -246,7 +246,11 @@ transactionRouter.get('/transactions/fecha', async (req, res) => {
     }
 });
 
-//identificador unico de la transaccion (parametro dinamico /transaction/:id)
+/**
+ * Obtiene una transacción por su ID.
+ * @param id - ID de la transacción
+ * @returns 200 OK o errores 404/500
+ */
 transactionRouter.get('/transactions/:id', async (req, res) => {
     try {
         const transaction = await Transaction.findById(req.params.id);
@@ -262,8 +266,11 @@ transactionRouter.get('/transactions/:id', async (req, res) => {
     }
 });
 
-
-//patch
+/**
+ * Modifica los bienes de una transacción existente.
+ * @param id - ID de la transacción
+ * @returns 200 OK o errores 400/404/500
+ */
 transactionRouter.patch('/transactions/:id', async (req, res) => {
 
     try {
@@ -363,8 +370,11 @@ transactionRouter.patch('/transactions/:id', async (req, res) => {
     }
 });
 
-
-//delete
+/**
+ * Elimina una transacción y genera una de devolución automáticamente.
+ * @param id - ID de la transacción
+ * @returns 200 OK con la transacción de devolución o errores 400/404/500
+ */
 transactionRouter.delete('/transactions/:id', async (req, res) => {
 
     try {
