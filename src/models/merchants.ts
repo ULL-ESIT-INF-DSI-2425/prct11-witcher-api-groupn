@@ -23,12 +23,15 @@ const MerchantSchema = new Schema<merchantsDocumentInterface>({
     type: Number,
     unique: true,
     required: true,
+    min: [0, 'Los ids deben ser positivos'],
   },
   nombre: {
     type: String,
     required: true,
     unique:true,
     trim: true,
+    minlength: 3,
+    maxlength: 50,
   },
   tipo: {
     type: String,

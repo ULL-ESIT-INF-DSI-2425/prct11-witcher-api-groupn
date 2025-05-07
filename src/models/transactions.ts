@@ -38,6 +38,7 @@ const TransactionSchema = new Schema<transactionsDocumentInterface>({
     type: Number,
     unique: true,
     required: true,
+    min: [0, 'Los ids deben ser positivos'],
   },
   tipo: {
     type: String,

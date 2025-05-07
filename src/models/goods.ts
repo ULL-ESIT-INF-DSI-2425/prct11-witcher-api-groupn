@@ -29,11 +29,14 @@ const GoodSchema = new Schema<goodsDocumentInterface>({
     type: Number,
     unique: true,
     required: true,
+    min: [0, 'Los ids deben ser positivos'],
   },
   nombre: {
     type: String,
     required: true,
     trim: true,
+    minlength: 3,
+    maxlength: 50,
   },
   descripcion: {
     type: String,
