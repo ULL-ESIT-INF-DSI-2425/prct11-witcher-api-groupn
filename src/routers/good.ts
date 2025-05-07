@@ -1,9 +1,16 @@
 import express from 'express';
 import { Good } from '../models/goods.js';
 
+
+/**
+ * Enrutador para operaciones CRUD sobre bienes.
+ */
 export const goodRouter = express.Router();
 
-//post
+/**
+ * Crea un nuevo bien.
+ * @returns 201 Created con el bien creado o 500 Internal Server Error
+ */
 goodRouter.post('/goods', async (req, res) => {
     const bien = new Good(req.body);
 
@@ -35,7 +42,10 @@ EJEMPLO BODY POSTMAN
     });*/
 });
 
-//get
+/**
+ * Obtiene todos los bienes o filtra por parámetros de búsqueda.
+ * @returns 200 OK con los bienes o 400/404/500 según el caso
+ */
 goodRouter.get('/goods', async (req, res) => {
 
     const allowedFilters = ['nombre', 'descripcion', 'material', 'peso', 'valor'];
@@ -75,6 +85,11 @@ goodRouter.get('/goods', async (req, res) => {
     });*/
 });
 
+/**
+ * Obtiene un bien por su ID.
+ * @param id - ID del bien
+ * @returns 200 OK con el bien o 404/500 según el caso
+ */
 goodRouter.get('/goods/:id', async (req, res) => {
     try {
         const bien = await Good.findById(req.params.id);
@@ -98,8 +113,10 @@ goodRouter.get('/goods/:id', async (req, res) => {
     });*/
 });
 
-
-//patch
+/**
+ * Modifica un bien usando su ID como query string.
+ * @returns 200 OK con el bien actualizado o error
+ */
 goodRouter.patch('/goods', async (req, res) => {
     if (!req.query.id) {
         res.status(400).send({error: 'An id must be provided in the query string',});
@@ -145,6 +162,11 @@ goodRouter.patch('/goods', async (req, res) => {
     }
 });
 
+/**
+ * Modifica un bien usando su ID como parámetro de ruta.
+ * @param id - ID del bien a actualizar
+ * @returns 200 OK con el bien actualizado o error
+ */
 goodRouter.patch('/goods/:id', async (req, res) => {
     if (!req.body) {
         res.status(400).send({error: 'Fields to be modified have to be provided in the request body',});
@@ -188,7 +210,10 @@ goodRouter.patch('/goods/:id', async (req, res) => {
     }
 });
 
-//delete
+/**
+ * Elimina un bien usando su ID como query string.
+ * @returns 200 OK con el bien eliminado o error
+ */
 goodRouter.delete('/goods', async (req, res) => {
     if (!req.query.id) {
         res.status(400).send({error: 'An id must be provided',});
@@ -215,6 +240,11 @@ goodRouter.delete('/goods', async (req, res) => {
     }
 });
 
+/**
+ * Elimina un bien usando su ID como parámetro de ruta.
+ * @param id - ID del bien a eliminar
+ * @returns 200 OK con el bien eliminado o error
+ */
 goodRouter.delete('/goods/:id', async (req, res) => {
     try {
         const bien = await Good.findByIdAndDelete(req.params.id);
