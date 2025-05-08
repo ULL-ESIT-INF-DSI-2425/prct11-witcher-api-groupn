@@ -20,26 +20,6 @@ goodRouter.post('/goods', async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
     }
-/*
-POST http://localhost:3000/goods
-EJEMPLO BODY POSTMAN
-{
-    "id": 1,
-    "nombre": "bien1",
-    "descripcion": "descripcion1",
-    "material": "materialupdate1",
-    "peso": 10,
-    "valor": 200
-}
-
-*/
-
-    /*
-    bien.save().then((bien) => {
-        res.status(201).send(bien);
-    }).catch((error) => {
-        res.status(400).send(error);
-    });*/
 });
 
 /**
@@ -73,16 +53,6 @@ goodRouter.get('/goods', async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
     }
-/*
-    Good.find(filters).then((bienes) => {
-        if(bienes.length !== 0) {
-            res.send(bienes);   //todos los bienes (sin query: http://localhost:3000/goods)
-        } else {
-            res.status(404).send(); //bien no encontrado
-        }
-    }).catch(() => {
-        res.status(500).send(); //error interno
-    });*/
 });
 
 /**
@@ -101,16 +71,6 @@ goodRouter.get('/goods/:id', async (req, res) => {
     } catch (error) {
         res.status(500).send();
     }
-    /*
-    Good.findById(req.params.id).then((bien) => {
-        if (!bien) {
-            res.status(404).send();
-        } else {
-            res.send(bien);
-        }
-    }).catch(() => {
-        res.status(500).send();
-    });*/
 });
 
 /**
@@ -145,19 +105,6 @@ goodRouter.patch('/goods', async (req, res) => {
             } catch (error) {
                 res.status(500).send(error);
             }
-            /*
-            Good.findOneAndUpdate({id: req.query.id}, req.body, {
-                new: true,
-                runValidators: true,
-            }).then((good) => {
-                if (!good) {
-                    res.status(404).send();
-                } else {
-                    res.send(good);
-                }
-            }).catch((error) => {
-                res.status(400).send(error);
-            });*/
         }
     }
 });
@@ -193,19 +140,7 @@ goodRouter.patch('/goods/:id', async (req, res) => {
             } catch (error) {
                 res.status(500).send(error);
             }
-/*
-            Good.findByIdAndUpdate(req.params.id, req.body, {
-                new: true,
-                runValidators: true,
-            }).then((good) => {
-                if (!good) {
-                    res.status(404).send();
-                } else {
-                    res.send(good);
-                }
-            }).catch((error) => {
-                res.status(400).send(error);
-            });*/
+
         }
     }
 });
@@ -228,15 +163,7 @@ goodRouter.delete('/goods', async (req, res) => {
         } catch (error) {
             res.status(500).send(error);
         }
-       /* Good.findOneAndDelete({id: req.query.id}).then((good) => {
-            if (!good) {
-                res.status(404).send();
-            } else {
-                res.send(good);
-            }
-        }).catch(() => {
-            res.status(400).send();
-        });*/
+
     }
 });
 
@@ -256,14 +183,5 @@ goodRouter.delete('/goods/:id', async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
     }
-    /*
-    Good.findByIdAndDelete(req.params.id).then((good) => {
-        if (!good) {
-            res.status(404).send();
-        } else {
-            res.send(good);
-        }
-    }).catch(() => {
-        res.status(400).send();
-    });*/
+
 });

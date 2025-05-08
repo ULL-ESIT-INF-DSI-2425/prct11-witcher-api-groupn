@@ -1,7 +1,5 @@
 import { Document, Schema, Types, model } from 'mongoose';
 
-// MAL IMPLEMENTADO
-// HAY QUE CREAR RELACIONES ENTRE LOS MODELOS GOOD, HUNTER y MERCHANT, autocalcular valor
 import { Good } from './goods.js';
 import { Hunter } from './hunters.js';
 import { Merchant } from './merchants.js';

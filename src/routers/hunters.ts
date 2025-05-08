@@ -20,24 +20,7 @@ hunterRouter.post('/hunters', async (req, res) => {
         res.status(500).send(error);
     }
 
-/*
-POST http://localhost:3000/hunters
-EJEMPLO BODY POSTMAN
-{
-    "id": 2,
-    "nombre": "nombre2",
-    "raza": "elfo",
-    "ubicacion": "casa seta"
-}
 
-*/
-
-
-    /*hunter.save().then((hunter) => {
-        res.status(201).send(hunter);
-    }).catch((error) => {
-        res.status(400).send(error);
-    });*/
 });
 
 /**
@@ -46,7 +29,6 @@ EJEMPLO BODY POSTMAN
  */
 hunterRouter.get('/hunters', async (req, res) => {
 
-    //const filter = req.query.nombre?{nombre: req.query.nombre.toString()}:{};
 
     const allowedFilters = ['nombre'];
     const actualFilters = Object.keys(req.query);
@@ -74,16 +56,7 @@ hunterRouter.get('/hunters', async (req, res) => {
         res.status(500).send(error);
     }
 
-/*
-    Hunter.find(filters).then((hunters) => {
-        if(hunters.length !== 0) {
-            res.send(hunters);   //todos los cazadores (sin query: http://localhost:3000/hunters)
-        } else {
-            res.status(404).send(); //no encontrado
-        }
-    }).catch(() => {
-        res.status(500).send(); //error interno
-    });*/
+
 });
 
 /**
@@ -104,16 +77,7 @@ hunterRouter.get('/hunters/:id', async (req, res) => {
         res.status(500).send();
     }
 
-/*
-    Hunter.findById(req.params.id).then((hunter) => {
-        if (!hunter) {
-            res.status(404).send();
-        } else {
-            res.send(hunter);
-        }
-    }).catch(() => {
-        res.status(500).send();
-    });*/
+
 });
 
 /**
@@ -149,18 +113,6 @@ hunterRouter.patch('/hunters', async (req, res) => {
             }
 
 
-           /* Hunter.findOneAndUpdate({id: req.query.id}, req.body, {
-                new: true,
-                runValidators: true,
-            }).then((hunter) => {
-                if (!hunter) {
-                    res.status(404).send();
-                } else {
-                    res.send(hunter);
-                }
-            }).catch((error) => {
-                res.status(400).send(error);
-            });*/
         }
     }
 });
@@ -197,18 +149,6 @@ hunterRouter.patch('/hunters/:id', async (req, res) => {
             }
 
 
-            /*Hunter.findByIdAndUpdate(req.params.id, req.body, {
-                new: true,
-                runValidators: true,
-            }).then((hunter) => {
-                if (!hunter) {
-                    res.status(404).send();
-                } else {
-                    res.send(hunter);
-                }
-            }).catch((error) => {
-                res.status(400).send(error);
-            });*/
         }
     }
 });
@@ -233,15 +173,7 @@ hunterRouter.delete('/hunters', async (req, res) => {
             res.status(500).send(error);
         }
 
-        /*Hunter.findOneAndDelete({id: req.query.id}).then((hunter) => {
-            if (!hunter) {
-                res.status(404).send();
-            } else {
-                res.send(hunter);
-            }
-        }).catch(() => {
-            res.status(400).send();
-        });*/
+
     }
 });
 
@@ -262,13 +194,4 @@ hunterRouter.delete('/hunters/:id', async (req, res) => {
         res.status(500).send(error);
     }
 
-    /*Hunter.findByIdAndDelete(req.params.id).then((hunter) => {
-        if (!hunter) {
-            res.status(404).send();
-        } else {
-            res.send(hunter);
-        }
-    }).catch(() => {
-        res.status(400).send();
-    });*/
 });

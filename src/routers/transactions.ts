@@ -14,44 +14,12 @@ import { Document, Schema, Types, model } from 'mongoose';
  */
 export const transactionRouter = express.Router();
 
-/*
-    CONSIDERACIONES A RESOLVER: 
 
-    - Hunter o Mercader o bien no existe en la base de datos al especificar una transaccion ->
-
-    - ¿Que ocurre con las transacciones de un Hunter o Mercader cuando este se elimina de la base de datos? -> 
-
-    - ¿Debería borrar las transacciones relacionadas con un bien que deseo borrar de la base de datos? -> 
-
-*/
 
 
 
 
 //post
-/*
-POST http://localhost:3000/transactions
-EJEMPLO BODY POSTMAN
-(añadir antes hunter con nombre3 y bienes con nombre "Espada" y "Escudo")
-
-{
-    "id": 12,
-    "tipo": "compra",
-    "nombre": "nombre3",  
-    "bienes": [
-        {
-            "nombre": "Espada",
-            "cantidad": 3
-        },
-        {
-            "nombre": "Escudo",
-            "cantidad": 5
-        }
-    ]
-}
-
-*/
-
 /**
  * Crea una nueva transacción (compra o venta).
  * @returns 201 Created o errores 400/404/500
@@ -74,18 +42,13 @@ try {
         return;
     }
 
-    //console.log(tipo, nombre, bienes);
     let persona;
     if (tipo === "compra") {
         persona = await Hunter.findOne({nombre});
     } else {
         persona = await Merchant.findOne({nombre});
     };
-    // const persona = tipo === 'compra'
-    // ? await Hunter.findOne({nombre})
-    // : await Merchant.findOne({nombre});
-
-    //console.log(persona);
+    
     // comprobar si cazador/mercader existe
     if (!persona) {
         res.status(404).send();
@@ -98,7 +61,7 @@ try {
     //comprobar cada bien individualmente
     for (const item of bienes) {
         const {nombre, cantidad} = item;
-        //console.log(nombre);
+        
 
         let bien = await Good.findOne({nombre: nombre});
         if (nombre === "Espada de Oro") {
@@ -176,7 +139,6 @@ try {
     - query string con nombre del hunter/mercader
     - query string con fecha de inicio y fin además del tipo de transacciones (venta a cazadores, compras a mercaderes o ambas)
     - identificador unico de la transaccion (parametro dinamico /transaction/:id)
-
 */
 
 /**
@@ -297,7 +259,6 @@ transactionRouter.patch('/transactions/:id', async (req, res) => {
             res.status(400).send();
         } else {
 
-           // const {bienes} = req.body;
 
             const nuevosBienes = req.body.bienes;
 
@@ -394,7 +355,6 @@ transactionRouter.delete('/transactions/:id', async (req, res) => {
         const ultimaTransaction = await Transaction.findOne().sort({id: -1}).exec();
         const newId = ultimaTransaction ? ultimaTransaction.id + 1 : 1;
 
-        //console.log(ultimaTransaction);
 
         // AÑADIR BIENES Y ACTUALIZAR valor
         const devolucionTransaction = new Transaction({

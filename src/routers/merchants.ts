@@ -19,24 +19,7 @@ merchantRouter.post('/merchants', async (req, res) => {
     } catch (error) {
         res.status(500).send(error);
     }
-/*
-POST http://localhost:3000/merchants
-EJEMPLO BODY POSTMAN
-{
-    "id": 2,
-    "nombre": "mercader2",
-    "tipo": "alquimista",
-    "ubicacion": "pantano norte"
-}
 
-*/
-
-
-    /*merchant.save().then((merchant) => {
-        res.status(201).send(merchant);
-    }).catch((error) => {
-        res.status(400).send(error);
-    });*/
 });
 
 /**
@@ -45,7 +28,7 @@ EJEMPLO BODY POSTMAN
  */
 merchantRouter.get('/merchants', async (req, res) => {
 
-    //const filter = req.query.nombre?{nombre: req.query.nombre.toString()}:{};
+
 
     const allowedFilters = ['nombre'];
     const actualFilters = Object.keys(req.query);
@@ -74,15 +57,7 @@ merchantRouter.get('/merchants', async (req, res) => {
     }
     
     
-    /*Merchant.find(filters).then((merchants) => {
-        if(merchants.length !== 0) {
-            res.send(merchants);   //todos los mercaderes (sin query: http://localhost:3000/merchants)
-        } else {
-            res.status(404).send(); //no encontrado
-        }
-    }).catch(() => {
-        res.status(500).send(); //error interno
-    });*/
+
 });
 
 /**
@@ -104,15 +79,6 @@ merchantRouter.get('/merchants/:id', async (req, res) => {
         res.status(500).send();
     }
 
-    /*Merchant.findById(req.params.id).then((merchant) => {
-        if (!merchant) {
-            res.status(404).send();
-        } else {
-            res.send(merchant);
-        }
-    }).catch(() => {
-        res.status(500).send();
-    });*/
 });
 
 /**
@@ -149,19 +115,6 @@ merchantRouter.patch('/merchants', async (req, res) => {
             }
 
 
-
-            /*Merchant.findOneAndUpdate({id: req.query.id}, req.body, {
-                new: true,
-                runValidators: true,
-            }).then((merchant) => {
-                if (!merchant) {
-                    res.status(404).send();
-                } else {
-                    res.send(merchant);
-                }
-            }).catch((error) => {
-                res.status(400).send(error);
-            });*/
         }
     }
 });
@@ -199,18 +152,6 @@ merchantRouter.patch('/merchants/:id', async (req, res) => {
             }
 
 
-            /*Merchant.findByIdAndUpdate(req.params.id, req.body, {
-                new: true,
-                runValidators: true,
-            }).then((merchant) => {
-                if (!merchant) {
-                    res.status(404).send();
-                } else {
-                    res.send(merchant);
-                }
-            }).catch((error) => {
-                res.status(400).send(error);
-            });*/
         }
     }
 });
@@ -235,16 +176,6 @@ merchantRouter.delete('/merchants', async (req, res) => {
             res.status(500).send(error);
         }
 
-
-        /*Merchant.findOneAndDelete({id: req.query.id}).then((merchant) => {
-            if (!merchant) {
-                res.status(404).send();
-            } else {
-                res.send(merchant);
-            }
-        }).catch(() => {
-            res.status(400).send();
-        });*/
     }
 });
 
@@ -266,14 +197,4 @@ merchantRouter.delete('/merchants/:id', async (req, res) => {
         res.status(500).send(error);
     }
 
-
-    /*Merchant.findByIdAndDelete(req.params.id).then((merchant) => {
-        if (!merchant) {
-            res.status(404).send();
-        } else {
-            res.send(merchant);
-        }
-    }).catch(() => {
-        res.status(400).send();
-    });*/
 });
