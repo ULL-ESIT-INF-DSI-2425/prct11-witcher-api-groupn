@@ -51,12 +51,12 @@ describe("POST /merchants", () => {
   });
 });
 
-describe("GET /hunters", () => {
-    test("Should get a hunter by nombre", async () => {
+describe("GET /merchants", () => {
+    test("Should get a merchant by nombre", async () => {
       await request(app).get("/merchants?nombre=testmerchant").expect(200);
     });
   
-    test("Should not find a hunter by name", async () => {
+    test("Should not find a merchant by name", async () => {
       await request(app).get("/merchants?nombre=NOEXISTE").expect(404);
     });
 
@@ -65,8 +65,8 @@ describe("GET /hunters", () => {
       });
 });
 
-describe("GET /hunters/:id", () => {
-    test("Should get a hunter by _id", async () => {
+describe("GET /merchants/:id", () => {
+    test("Should get a merchant by _id", async () => {
       const response = await request(app).get(`/merchants/${insertedMerchant._id}`).expect(200);
 
       expect(response.body).to.include({
@@ -78,7 +78,7 @@ describe("GET /hunters/:id", () => {
 
     });
   
-    test("Should not find a hunter by _id", async () => {
+    test("Should not find a merchants by _id", async () => {
       await request(app).get("/merchants/aaaaaaaaaaaaaaaaaaaaaaaa").expect(404);
     });
 
@@ -87,7 +87,7 @@ describe("GET /hunters/:id", () => {
       });
 });
 
-describe("patch /hunters", () => {
+describe("patch /merchants", () => {
     test("ID not provided", async () => {
       await request(app).patch(`/merchants`).send({
         nombre: "testupdatedmerchant",
@@ -100,7 +100,7 @@ describe("patch /hunters", () => {
         await request(app).patch(`/merchants?id=1`).expect(400);
     });
   
-    test("Should modify a hunter", async () => {
+    test("Should modify a merchant", async () => {
         const response = await request(app).patch(`/merchants?id=1`).send({
             nombre: "testupdatedmerchant",
             tipo: "herrero",
@@ -128,7 +128,7 @@ describe("patch /hunters", () => {
         }).expect(400);
     });
 
-    test("hunter not found", async () => {
+    test("merchant not found", async () => {
         await request(app).patch(`/merchants?id=999`).send({
             nombre: "testupdatedmerchant",
             tipo: "herrero",
@@ -139,27 +139,28 @@ describe("patch /hunters", () => {
 
   
 describe("patch /merchants/:id", () => {
-    /*test("ID not provided", async () => {
-      await request(app).patch(`/goods`).send({
-        nombre: "espada",
-        descripcion: "espada de acero", 
-        material: "acero",
-        peso: 999,
-        valor: 80,
-        stock: 200
-      }).expect(400);
-    });*/
 
     test("BODY not provided", async () => {
         await request(app).patch(`/merchants/${insertedMerchant._id}`).expect(400);
     });
   
-    test("Should modify a hunter", async () => {
-        await request(app).patch(`/merchants/${insertedMerchant._id}`).send({
+    test("Should modify a merchant", async () => {
+        const response = await request(app).patch(`/merchants/${insertedMerchant._id}`).send({
             nombre: "testupdatedmerchant",
         tipo: "herrero",
         ubicacion: "lago norte"
         }).expect(200);
+
+        expect(response.body).to.include({
+          id: 1,
+          nombre: "testupdatedmerchant",
+          tipo: "herrero",
+          ubicacion: "lago norte"
+        });
+
+        const updatedMerchant = await Merchant.findById(response.body._id);
+        expect(updatedMerchant).not.toBe(null);
+        expect(updatedMerchant!.nombre).to.equal("testupdatedmerchant");
     });
 
     test("Invalid update body", async () => {
@@ -171,7 +172,7 @@ describe("patch /merchants/:id", () => {
         }).expect(400);
     });
 
-    test("hunter not found", async () => {
+    test("merchant not found", async () => {
         await request(app).patch(`/merchants/aaaaaaaaaaaaaaaaaaaaaaaa`).send({
             nombre: "testupdatedmerchant",
         tipo: "herrero",
@@ -179,7 +180,7 @@ describe("patch /merchants/:id", () => {
         }).expect(404);
     });
 
-    test("error hunter", async () => {
+    test("error merchant", async () => {
         await request(app).patch(`/merchants/0000000`).send({
             nombre: "testupdatedmerchant",
         tipo: "herrero",
@@ -188,26 +189,46 @@ describe("patch /merchants/:id", () => {
     });
 });
 
-describe("DELETE /hunters", () => {
-    test("Should delete a hunter by id", async () => {
-      await request(app).delete("/merchants?id=1").expect(200);
+describe("DELETE /merchants", () => {
+    test("Should delete a merchant by id", async () => {
+      const response = await request(app).delete("/merchants?id=1").expect(200);
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "testmerchant",
+        tipo: "herrero",
+        ubicacion: "arbol caido"
+      });
+
+      const deletedMerchant = await Merchant.findById(response.body._id);
+      expect(deletedMerchant).toBe(null);
     });
 
-    test("delete hunter no querystring", async () => {
+    test("delete merchant no querystring", async () => {
         await request(app).delete("/merchants").expect(400);
     });
 
-    test("hunter not found", async () => {
+    test("merchant not found", async () => {
         await request(app).delete("/merchants?id=998").expect(404);
     });
 });
 
-describe("DELETE /hunters/:id", () => {
-    test("Should get a hunter by _id", async () => {
-      await request(app).delete(`/merchants/${insertedMerchant._id}`).expect(200);
+describe("DELETE /merchants/:id", () => {
+    test("Should get a merchant by _id", async () => {
+      const response = await request(app).delete(`/merchants/${insertedMerchant._id}`).expect(200);
+
+      expect(response.body).to.include({
+        id: 1,
+        nombre: "testmerchant",
+        tipo: "herrero",
+        ubicacion: "arbol caido"
+      });
+
+      const deletedMerchant = await Merchant.findById(response.body._id);
+      expect(deletedMerchant).toBe(null);
     });
   
-    test("Should not find a hunter by _id", async () => {
+    test("Should not find a merchant by _id", async () => {
       await request(app).delete("/merchants/aaaaaaaaaaaaaaaaaaaaaaaa").expect(404);
     });
 

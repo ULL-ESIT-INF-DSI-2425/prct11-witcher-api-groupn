@@ -48,18 +48,6 @@ beforeEach(async () => {
     insertedGood = await new Good(firstGood).save();
     fecha_actual = new Date();
 
-
-    //insertedHunter = await Hunter.insertMany([firstHunter]);
-    //insertedMerchant = await Merchant.insertMany([firstMerchant]);
-    //insertedGood = await Good.insertMany([firstGood]);
-    // Asegura que los datos están en la base
-    //const h = await Hunter.findOne({ nombre: "testhunter3" }).lean();
-    //console.log("Inserted Hunter:", insertedHunter);
-    //const m = await Merchant.findOne({ nombre: "testmerchant3" }).lean();
-    //const g = await Good.findOne({ nombre: "Espada de Plata" }).lean();
-    //expect(h).not.toBeNull();
-    //expect(m).not.toBeNull();
-    //expect(g).not.toBeNull();
 });
 
 

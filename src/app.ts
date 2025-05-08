@@ -46,10 +46,3 @@ app.use(transactionRouter);
  * Enrutador por defecto para rutas no reconocidas.
  */
 app.use(defaultRouter);
-/*
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-    console.log(`Server is up on port ${port}`);
-});
-*/
